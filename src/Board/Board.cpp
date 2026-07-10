@@ -45,23 +45,9 @@ bool Board::isValidCoordinate(const Coordinate &coordinate) const {
 }
 
 void Board::movePiece(const Move &move) {
-  Coordinate from = move.getFrom();
-  Coordinate to = move.getTo();
-
-  if (!isValidCoordinate(from) || !isValidCoordinate(to)) {
+  Piece *moving_piece = removePiece(move.getFrom());
+  if (moving_piece == nullptr) {
     return;
   }
-
-  const Piece *piece = getPiece(from);
-  if (piece == nullptr) {
-    return;
-  }
-  
-  if(isOccupied(to))
-  {
-    return;
-  }
-
-  Piece *moving_piece = removePiece(from);
-  setPiece(to, moving_piece);
+  setPiece(move.getTo(), moving_piece);
 }
