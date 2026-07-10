@@ -43,3 +43,11 @@ Square &Board::getSquare(const Coordinate &coordinate) {
 bool Board::isValidCoordinate(const Coordinate &coordinate) const {
   return coordinate.getRow() < SIZE && coordinate.getColumn() < SIZE;
 }
+
+void Board::movePiece(const Move &move) {
+  Piece *moving_piece = removePiece(move.getFrom());
+  if (moving_piece == nullptr) {
+    return;
+  }
+  setPiece(move.getTo(), moving_piece);
+}

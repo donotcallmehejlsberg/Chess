@@ -7,6 +7,7 @@
 #include "Board/Coordinate.hpp"
 #include "Board/Square.hpp"
 #include "Pieces/Piece.hpp"
+#include "Movement/Move.hpp"
 
 class Board {
 public:
@@ -23,6 +24,8 @@ public:
 
   const Piece *getPiece(const Coordinate &coordinate) const;
   void setPiece(const Coordinate &coordinate, Piece *piece);
+
+  void movePiece(const Move &move);
 
   Piece *removePiece(const Coordinate &coordinate);
   bool isOccupied(const Coordinate &coordinate) const;
