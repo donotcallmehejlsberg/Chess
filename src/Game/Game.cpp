@@ -1,0 +1,42 @@
+#include "Game/Game.hpp"
+
+#include <iostream>
+
+Game::Game()
+    : white_player_(Color::White), black_player_(Color::Black),
+      current_player_color_(Color::White), result_(GameResult::InProgress) {}
+
+void Game::printResult() const
+{
+  if (result_ == GameResult::WhiteWon)
+  {
+    std::cout << "White won!" << std::endl;
+  }
+  else if (result_ == GameResult::BlackWon)
+  {
+    std::cout << "Black won!" << std::endl;
+  }
+  else if (result_ == GameResult::Draw)
+  {
+    std::cout << "Draw!" << std::endl;
+  }
+}
+
+bool Game::isGameOver() const
+{
+  return result_ != GameResult::InProgress;
+}
+
+void Game::setupGame()
+{
+  result_ = GameResult::InProgress;
+  current_player_color_ = Color::White;
+  setup_.setupPieces(board_, white_player_, black_player_);
+  renderer_.printBoard(board_, white_player_);
+}
+
+void Game::run()
+{
+  setupGame();
+}
+
