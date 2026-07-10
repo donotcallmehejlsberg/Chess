@@ -1,0 +1,6 @@
+*.o
+chess
+build/
+cmake-build-*/
+.DS_Store
+.vscode/
