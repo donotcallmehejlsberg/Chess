@@ -37,6 +37,12 @@ void Game::setupGame()
 
 void Game::run()
 {
+  std::cout << std::endl;
+  std::cout << "         WELCOME TO CHESS!         " << std::endl;
+  std::cout << "          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜          " << std::endl;
+  std::cout << "          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙          " << std::endl;
+  std::cout << std::endl;
+  
   setupGame();
 }
 
