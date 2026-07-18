@@ -6,6 +6,10 @@
 #include "Color.hpp"
 #include "Game/GameResult.hpp"
 #include "Game/GameSetup.hpp"
+#include "Input/InputReader.hpp"
+#include "Movement/Move.hpp"
+#include "Movement/MoveParser.hpp"
+#include "Movement/MoveValidator.hpp"
 #include "Player.hpp"
 
 class Game {
@@ -20,10 +24,15 @@ private:
 
   GameSetup setup_;
   BoardRenderer renderer_;
+  MoveValidator move_validator_;
+  MoveParser move_parser_;
+  InputReader input_reader_;
 
   void printResult() const;
   bool isGameOver() const;
   void setupGame();
+
+  void handleTurn() const; 
 
 public:
   Game();
