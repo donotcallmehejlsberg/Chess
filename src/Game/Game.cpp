@@ -60,7 +60,15 @@ void Game::handleTurn() {
 
   board_.movePiece(move.value());
   switchPlayer();
-  renderer_.printBoard(board_, current_player_color_);
+  renderer_.printBoard(board_, getCurrentPlayer());
+}
+
+const Player &Game::getCurrentPlayer() const {
+  if (current_player_color_ == Color::White) {
+    return white_player_;
+  } else if (current_player_color_ == Color::Black) {
+    return black_player_;
+  }
 }
 
 void Game::run() {
