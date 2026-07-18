@@ -44,12 +44,12 @@ void Player::printCapturedPieces() const {
 
 std::string Player::getColorName() const {
   if (color_ == Color::White) {
-    return "White: ";
+    return "White";
   }
 
   if (color_ == Color::Black) {
-    return "Black: ";
+    return "Black";
   }
 
-  return "Unknown: ";
+  return "Unknown";
 }

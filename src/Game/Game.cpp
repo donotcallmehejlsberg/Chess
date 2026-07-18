@@ -13,6 +13,9 @@ void Game::printResult() const {
     std::cout << "Black won!" << std::endl;
   } else if (result_ == GameResult::Draw) {
     std::cout << "Draw!" << std::endl;
+  } else if (result_ == GameResult::Quit) {
+    std::cout << getCurrentPlayer().getColorName() << " quit the game."
+              << std::endl;
   }
 }
 
@@ -42,33 +45,36 @@ void Game::printTurnPrompt(Color color) {
 }
 
 void Game::handleTurn() {
-  printTurnPrompt(current_player_color_);
-  std::string input = input_reader_.readLine();
+  while (true) {
+    printTurnPrompt(current_player_color_);
+    std::string input = input_reader_.readLine();
+    if (input == "quit") {
+      result_ = GameResult::Quit;
+      return;
+    }
 
-  std::optional<Move> move = move_parser_.handleMove(input);
-  if (!move.has_value()) {
-    std::cout << "Invalid input." << std::endl;
+    std::optional<Move> move = move_parser_.handleMove(input);
+    if (!move.has_value()) {
+      std::cout << "Invalid input." << std::endl;
+      continue;
+    }
+
+    bool valid_move = move_validator_.isValidMove(board_, move.value(),
+                                                  current_player_color_);
+    if (valid_move == false) {
+      std::cout << "Invalid move." << std::endl;
+      continue;
+    }
+
+    board_.movePiece(move.value());
+    switchPlayer();
+    renderer_.printBoard(board_, getCurrentPlayer());
     return;
   }
-
-  bool valid_move =
-      move_validator_.isValidMove(board_, move.value(), current_player_color_);
-  if (valid_move == false) {
-    std::cout << "Invalid move." << std::endl;
-    return;
-  }
-
-  board_.movePiece(move.value());
-  switchPlayer();
-  renderer_.printBoard(board_, getCurrentPlayer());
 }
 
 const Player &Game::getCurrentPlayer() const {
-  if (current_player_color_ == Color::White) {
-    return white_player_;
-  } else if (current_player_color_ == Color::Black) {
-    return black_player_;
-  }
+  return current_player_color_ == Color::White ? white_player_ : black_player_;
 }
 
 void Game::run() {
@@ -82,4 +88,5 @@ void Game::run() {
   while (result_ == GameResult::InProgress) {
     handleTurn();
   }
+  printResult();
 }
