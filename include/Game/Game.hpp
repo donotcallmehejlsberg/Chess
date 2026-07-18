@@ -31,6 +31,7 @@ private:
   void printResult() const;
   bool isGameOver() const;
   void setupGame();
+  void printTurnPrompt(Color color);
 
   void switchPlayer();
   void handleTurn();

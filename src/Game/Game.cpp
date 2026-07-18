@@ -33,17 +33,28 @@ void Game::switchPlayer() {
   }
 }
 
+void Game::printTurnPrompt(Color color) {
+  if (color == Color::White) {
+    std::cout << "White > ";
+  } else if (color == Color::Black) {
+    std::cout << "Black > ";
+  }
+}
+
 void Game::handleTurn() {
+  printTurnPrompt(current_player_color_);
   std::string input = input_reader_.readLine();
 
   std::optional<Move> move = move_parser_.handleMove(input);
   if (!move.has_value()) {
+    std::cout << "Invalid input." << std::endl;
     return;
   }
 
   bool valid_move =
       move_validator_.isValidMove(board_, move.value(), current_player_color_);
   if (valid_move == false) {
+    std::cout << "Invalid move." << std::endl;
     return;
   }
 
@@ -60,5 +71,7 @@ void Game::run() {
   std::cout << std::endl;
 
   setupGame();
-  handleTurn();
+  while (result_ == GameResult::InProgress) {
+    handleTurn();
+  }
 }
