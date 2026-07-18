@@ -32,7 +32,8 @@ private:
   bool isGameOver() const;
   void setupGame();
 
-  void handleTurn() const; 
+  void switchPlayer();
+  void handleTurn();
 
 public:
   Game();

@@ -1,7 +1,7 @@
 #ifndef MOVE_PARSER_HPP
 #define MOVE_PARSER_HPP
 
-#include "InputReader.hpp"
+#include "Input/InputReader.hpp"
 #include "Movement/Move.hpp"
 
 #include <optional>
@@ -9,7 +9,7 @@
 
 class MoveParser {
 public:
-  std::optional<Move> MoveParser::handleMove(const std::string &input) const;
+  std::optional<Move> handleMove(const std::string &input) const;
 
   bool isEmpty(const std::string &input) const;
 

@@ -6,43 +6,59 @@ Game::Game()
     : white_player_(Color::White), black_player_(Color::Black),
       current_player_color_(Color::White), result_(GameResult::InProgress) {}
 
-void Game::printResult() const
-{
-  if (result_ == GameResult::WhiteWon)
-  {
+void Game::printResult() const {
+  if (result_ == GameResult::WhiteWon) {
     std::cout << "White won!" << std::endl;
-  }
-  else if (result_ == GameResult::BlackWon)
-  {
+  } else if (result_ == GameResult::BlackWon) {
     std::cout << "Black won!" << std::endl;
-  }
-  else if (result_ == GameResult::Draw)
-  {
+  } else if (result_ == GameResult::Draw) {
     std::cout << "Draw!" << std::endl;
   }
 }
 
-bool Game::isGameOver() const
-{
-  return result_ != GameResult::InProgress;
-}
+bool Game::isGameOver() const { return result_ != GameResult::InProgress; }
 
-void Game::setupGame()
-{
+void Game::setupGame() {
   result_ = GameResult::InProgress;
   current_player_color_ = Color::White;
   setup_.setupPieces(board_, white_player_, black_player_);
   renderer_.printBoard(board_, white_player_);
 }
 
-void Game::run()
-{
+void Game::switchPlayer() {
+  if (current_player_color_ == Color::White) {
+    current_player_color_ = Color::Black;
+  } else {
+    current_player_color_ = Color::White;
+  }
+}
+
+void Game::handleTurn() {
+  std::string input = input_reader_.readLine();
+
+  std::optional<Move> move = move_parser_.handleMove(input);
+  if (!move.has_value()) {
+    return;
+  }
+
+  bool valid_move =
+      move_validator_.isValidMove(board_, move.value(), current_player_color_);
+  if (valid_move == false) {
+    return;
+  }
+
+  board_.movePiece(move.value());
+  switchPlayer();
+  renderer_.printBoard(board_, current_player_color_);
+}
+
+void Game::run() {
   std::cout << std::endl;
   std::cout << "         WELCOME TO CHESS!         " << std::endl;
   std::cout << "          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜          " << std::endl;
   std::cout << "          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙          " << std::endl;
   std::cout << std::endl;
-  
-  setupGame();
-}
 
+  setupGame();
+  handleTurn();
+}
