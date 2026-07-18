@@ -9,7 +9,7 @@
 
 class MoveParser {
 public:
-  std::optional<Move> MoveParser::handleMove(const std::string &input);
+  std::optional<Move> MoveParser::handleMove(const std::string &input) const;
 
   bool isEmpty(const std::string &input) const;
 
