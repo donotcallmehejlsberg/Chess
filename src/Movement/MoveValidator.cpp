@@ -41,6 +41,14 @@ bool MoveValidator::isOccupiedByOwnPiece(const Board &board,
   return target_piece != nullptr && target_piece->getPieceColor() == color;
 }
 
+bool MoveValidator::isOccupiedByEnemyPiece(const Board &board,
+                                           const Coordinate &to,
+                                           Color color) const {
+  const Piece *target_piece = board.getPiece(to);
+
+  return target_piece != nullptr && target_piece->getPieceColor() != color;
+}
+
 bool MoveValidator::isMovingOwnPiece(const Piece *piece, Color color) const {
   return piece->getPieceColor() == color;
 }
@@ -52,4 +60,4 @@ bool MoveValidator::isSameSquare(const Move &move) const {
   return from.getRow() == to.getRow() && from.getColumn() == to.getColumn();
 }
 
-// bool MoveValidator::isValidPawnMove() const {}
+bool MoveValidator::isValidPawnMove() const {}

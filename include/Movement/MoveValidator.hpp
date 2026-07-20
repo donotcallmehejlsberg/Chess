@@ -13,6 +13,8 @@ public:
   bool isValidPawnMove() const; 
 
   bool isOccupiedByOwnPiece(const Board &board, const Coordinate &to, Color color) const;
+  bool isOccupiedByEnemyPiece(const Board &board, const Coordinate &to, Color color) const;
+  
   bool isMovingOwnPiece(const Piece *piece, Color color) const;
   bool isSameSquare(const Move &move) const;
 
