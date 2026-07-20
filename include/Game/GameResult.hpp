@@ -6,7 +6,8 @@ enum class GameResult
   InProgress,
   WhiteWon,
   BlackWon,
-  Draw
+  Draw,
+  Quit
 };
 
 #endif

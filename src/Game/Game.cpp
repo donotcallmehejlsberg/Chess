@@ -13,6 +13,9 @@ void Game::printResult() const {
     std::cout << "Black won!" << std::endl;
   } else if (result_ == GameResult::Draw) {
     std::cout << "Draw!" << std::endl;
+  } else if (result_ == GameResult::Quit) {
+    std::cout << getCurrentPlayer().getColorName() << " quit the game."
+              << std::endl;
   }
 }
 
@@ -33,23 +36,45 @@ void Game::switchPlayer() {
   }
 }
 
+void Game::printTurnPrompt(Color color) {
+  if (color == Color::White) {
+    std::cout << "White > ";
+  } else if (color == Color::Black) {
+    std::cout << "Black > ";
+  }
+}
+
 void Game::handleTurn() {
-  std::string input = input_reader_.readLine();
+  while (true) {
+    printTurnPrompt(current_player_color_);
+    std::string input = input_reader_.readLine();
+    if (input == "quit") {
+      result_ = GameResult::Quit;
+      return;
+    }
 
-  std::optional<Move> move = move_parser_.handleMove(input);
-  if (!move.has_value()) {
+    std::optional<Move> move = move_parser_.handleMove(input);
+    if (!move.has_value()) {
+      std::cout << "Invalid input." << std::endl;
+      continue;
+    }
+
+    bool valid_move = move_validator_.isValidMove(board_, move.value(),
+                                                  current_player_color_);
+    if (valid_move == false) {
+      std::cout << "Invalid move." << std::endl;
+      continue;
+    }
+
+    board_.movePiece(move.value());
+    switchPlayer();
+    renderer_.printBoard(board_, getCurrentPlayer());
     return;
   }
+}
 
-  bool valid_move =
-      move_validator_.isValidMove(board_, move.value(), current_player_color_);
-  if (valid_move == false) {
-    return;
-  }
-
-  board_.movePiece(move.value());
-  switchPlayer();
-  renderer_.printBoard(board_, current_player_color_);
+const Player &Game::getCurrentPlayer() const {
+  return current_player_color_ == Color::White ? white_player_ : black_player_;
 }
 
 void Game::run() {
@@ -60,5 +85,8 @@ void Game::run() {
   std::cout << std::endl;
 
   setupGame();
-  handleTurn();
+  while (result_ == GameResult::InProgress) {
+    handleTurn();
+  }
+  printResult();
 }
