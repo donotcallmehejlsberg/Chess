@@ -15,14 +15,15 @@ public:
   bool isValidKnightMove(const Board &board, const Move &move,
                          Color color) const;
 
-  bool isValidRookMove(const Board &board, const Move &move,
-                         Color color) const;
+  bool isValidRookMove(const Board &board, const Move &move, Color color) const;
 
   bool isValidBishopMove(const Board &board, const Move &move,
                          Color color) const;
-                         
+
+  bool isValidQueenMove(const Board &board, const Move &move,
+                         Color color) const;
+
   bool isPathClear(const Board &board, const Move &move) const;
-  
 
   bool isOccupiedByOwnPiece(const Board &board, const Coordinate &to,
                             Color color) const;
