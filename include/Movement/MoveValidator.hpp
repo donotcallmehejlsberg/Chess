@@ -5,12 +5,12 @@
 #include "Movement/Move.hpp"
 
 class MoveValidator {
-
-public:
-  bool isValidMove(const Board &board, const Move &move, Color color) const;
-
+private: 
   bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
   bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
+
+  bool isValidKingMove(const Board &board, const Move &move,
+                         Color color) const;
 
   bool isValidKnightMove(const Board &board, const Move &move,
                          Color color) const;
@@ -21,7 +21,7 @@ public:
                          Color color) const;
 
   bool isValidQueenMove(const Board &board, const Move &move,
-                         Color color) const;
+                        Color color) const;
 
   bool isPathClear(const Board &board, const Move &move) const;
 
@@ -32,6 +32,8 @@ public:
 
   bool isMovingOwnPiece(const Piece *piece, Color color) const;
   bool isSameSquare(const Move &move) const;
+public:
+  bool isValidMove(const Board &board, const Move &move, Color color) const;
 };
 
 #endif

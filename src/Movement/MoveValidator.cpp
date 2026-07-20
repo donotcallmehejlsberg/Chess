@@ -50,6 +50,11 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
   if (piece->getPieceType() == PieceType::Queen) {
     return isValidQueenMove(board, move, color);
   }
+
+  if (piece->getPieceType() == PieceType::King) {
+    return isValidKingMove(board, move, color);
+  }
+
   return true;
 }
 
@@ -150,6 +155,30 @@ bool MoveValidator::isValidRookMove(const Board &board, const Move &move,
   if ((row_change == 0 && column_change != 0) ||
       (column_change == 0 && row_change != 0)) {
     return isPathClear(board, move);
+  }
+
+  return false;
+}
+
+bool MoveValidator::isValidKingMove(const Board &board, const Move &move,
+                                    Color color) const {
+  const Piece *king = board.getPiece(move.getFrom());
+
+  if (king == nullptr || king->getPieceType() != PieceType::King ||
+      !isMovingOwnPiece(king, color)) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+  const int column_change =
+      static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
+
+  if (std::abs(row_change) <= 1 && std::abs(column_change) <= 1) {
+    return true;
   }
 
   return false;
