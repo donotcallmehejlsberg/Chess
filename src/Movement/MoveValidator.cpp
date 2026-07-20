@@ -39,6 +39,10 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return isValidKnightMove(board, move, color);
   }
 
+  if (piece->getPieceType() == PieceType::Rook) {
+    return isValidRookMove(board, move, color);
+  }
+
   return true;
 }
 
@@ -67,6 +71,31 @@ bool MoveValidator::isSameSquare(const Move &move) const {
   const Coordinate &to = move.getTo();
 
   return from.getRow() == to.getRow() && from.getColumn() == to.getColumn();
+}
+
+bool MoveValidator::isValidRookMove(const Board &board, const Move &move,
+                                    Color color) const {
+  const Piece *rook = board.getPiece(move.getFrom());
+
+  if (rook == nullptr || rook->getPieceType() != PieceType::Rook ||
+      !isMovingOwnPiece(rook, color)) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+  const int column_change =
+      static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
+
+  if ((row_change == 0 && column_change != 0) ||
+      (column_change == 0 && row_change != 0)) {
+    return true;
+  }
+
+  return false;
 }
 
 bool MoveValidator::isValidKnightMove(const Board &board, const Move &move,
