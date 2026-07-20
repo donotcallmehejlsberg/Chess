@@ -12,6 +12,9 @@ public:
   bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
   bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
 
+  bool isValidKnightMove(const Board &board, const Move &move,
+                         Color color) const;
+
   bool isOccupiedByOwnPiece(const Board &board, const Coordinate &to,
                             Color color) const;
   bool isOccupiedByEnemyPiece(const Board &board, const Coordinate &to,

@@ -1,4 +1,5 @@
 #include "Movement/MoveValidator.hpp"
+#include <cstdlib>
 
 bool MoveValidator::isValidMove(const Board &board, const Move &move,
                                 Color color) const {
@@ -34,6 +35,10 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return isValidPawnMove(board, move, color);
   }
 
+  if (piece->getPieceType() == PieceType::Knight) {
+    return isValidKnightMove(board, move, color);
+  }
+
   return true;
 }
 
@@ -64,12 +69,37 @@ bool MoveValidator::isSameSquare(const Move &move) const {
   return from.getRow() == to.getRow() && from.getColumn() == to.getColumn();
 }
 
+bool MoveValidator::isValidKnightMove(const Board &board, const Move &move,
+                                      Color color) const {
+  const Piece *knight = board.getPiece(move.getFrom());
+
+  if (knight == nullptr || knight->getPieceType() != PieceType::Knight ||
+      !isMovingOwnPiece(knight, color)) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+  const int column_change =
+      static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
+
+  if ((std::abs(row_change) == 2 && std::abs(column_change) == 1) ||
+      (std::abs(row_change) == 1 && std::abs(column_change) == 2)) {
+    return true;
+  }
+
+  return false;
+}
+
 bool MoveValidator::isValidPawnMove(const Board &board, const Move &move,
                                     Color color) const {
-  const Piece *piece = board.getPiece(move.getFrom());
+  const Piece *pawn = board.getPiece(move.getFrom());
 
-  if (piece == nullptr || piece->getPieceType() != PieceType::Pawn ||
-      !isMovingOwnPiece(piece, color)) {
+  if (pawn == nullptr || pawn->getPieceType() != PieceType::Pawn ||
+      !isMovingOwnPiece(pawn, color)) {
     return false;
   }
 
@@ -82,19 +112,17 @@ bool MoveValidator::isValidPawnMove(const Board &board, const Move &move,
   const int column_change =
       static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
 
-  if (column_change == 0 && row_change == direction &&
-      !board.isOccupied(to)) {
+  if (column_change == 0 && row_change == direction && !board.isOccupied(to)) {
     return true;
   }
 
   if (column_change == 0 && row_change == direction * 2 &&
-      isPawnOnStartingRank(piece, from)) {
+      isPawnOnStartingRank(pawn, from)) {
     Coordinate middle_square(from.getRow() + direction, from.getColumn());
     return !board.isOccupied(middle_square) && !board.isOccupied(to);
   }
 
-  if ((column_change == 1 || column_change == -1) &&
-      row_change == direction) {
+  if ((column_change == 1 || column_change == -1) && row_change == direction) {
     return isOccupiedByEnemyPiece(board, to, color);
   }
 
