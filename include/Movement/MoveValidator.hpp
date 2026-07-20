@@ -17,6 +17,10 @@ public:
 
   bool isValidRookMove(const Board &board, const Move &move,
                          Color color) const;
+
+  bool isValidBishopMove(const Board &board, const Move &move,
+                         Color color) const;
+                         
   bool isPathClear(const Board &board, const Move &move) const;
   
 

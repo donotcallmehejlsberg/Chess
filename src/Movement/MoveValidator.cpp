@@ -43,6 +43,9 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return isValidRookMove(board, move, color);
   }
 
+  if (piece->getPieceType() == PieceType::Bishop) {
+    return isValidBishopMove(board, move, color);
+  }
   return true;
 }
 
@@ -71,6 +74,31 @@ bool MoveValidator::isSameSquare(const Move &move) const {
   const Coordinate &to = move.getTo();
 
   return from.getRow() == to.getRow() && from.getColumn() == to.getColumn();
+}
+
+bool MoveValidator::isValidBishopMove(const Board &board, const Move &move,
+                         Color color) const
+{
+  const Piece *bishop = board.getPiece(move.getFrom());
+
+  if (bishop == nullptr || bishop->getPieceType() != PieceType::Bishop ||
+      !isMovingOwnPiece(bishop, color)) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+  const int column_change =
+      static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
+
+  if (std::abs(row_change) == std::abs(column_change)) {
+    return isPathClear(board, move);
+  }
+
+  return false;
 }
 
 bool MoveValidator::isValidRookMove(const Board &board, const Move &move,
