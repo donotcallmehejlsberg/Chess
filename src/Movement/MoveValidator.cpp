@@ -92,7 +92,7 @@ bool MoveValidator::isValidRookMove(const Board &board, const Move &move,
 
   if ((row_change == 0 && column_change != 0) ||
       (column_change == 0 && row_change != 0)) {
-    return true;
+    return isPathClear(board, move);
   }
 
   return false;
@@ -169,4 +169,41 @@ bool MoveValidator::isPawnOnStartingRank(const Piece *pawn,
   }
 
   return from.getRow() == 1;
+}
+
+bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  int row_step = 0;
+  int column_step = 0;
+
+  if (to.getRow() > from.getRow()) {
+    row_step = 1;
+  } else if (to.getRow() < from.getRow()) {
+    row_step = -1;
+  }
+
+  if (to.getColumn() > from.getColumn()) {
+    column_step = 1;
+  } else if (to.getColumn() < from.getColumn()) {
+    column_step = -1;
+  }
+
+  int current_row = static_cast<int>(from.getRow()) + row_step;
+  int current_column = static_cast<int>(from.getColumn()) + column_step;
+
+  while (current_row != static_cast<int>(to.getRow()) ||
+         current_column != static_cast<int>(to.getColumn())) {
+    Coordinate current(current_row, current_column);
+
+    if (board.isOccupied(current)) {
+      return false;
+    }
+
+    current_row += row_step;
+    current_column += column_step;
+  }
+
+  return true;
 }
