@@ -9,7 +9,7 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return false;
   }
 
-  if (from.getRow() == to.getRow() && from.getColumn() == to.getColumn()) {
+  if (isSameSquare(move)) {
     return false;
   }
 
@@ -18,7 +18,7 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return false;
   }
 
-  if (piece->getPieceColor() != color) {
+  if (!isMovingOwnPiece(piece, color)) {
     return false;
   }
 
@@ -32,3 +32,24 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
 
   return true;
 }
+
+bool MoveValidator::isOccupiedByOwnPiece(const Board &board,
+                                         const Coordinate &to,
+                                         Color color) const {
+  const Piece *target_piece = board.getPiece(to);
+
+  return target_piece != nullptr && target_piece->getPieceColor() == color;
+}
+
+bool MoveValidator::isMovingOwnPiece(const Piece *piece, Color color) const {
+  return piece->getPieceColor() == color;
+}
+
+bool MoveValidator::isSameSquare(const Move &move) const {
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  return from.getRow() == to.getRow() && from.getColumn() == to.getColumn();
+}
+
+// bool MoveValidator::isValidPawnMove() const {}
