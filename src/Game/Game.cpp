@@ -47,7 +47,7 @@ void Game::printTurnPrompt(Color color) {
 void Game::handleTurn() {
   while (true) {
     printTurnPrompt(current_player_color_);
-    std::string input = input_reader_.readLine();
+    std::string input = input_normalizer_.normalize(input_reader_.readLine());
     if (input == "quit") {
       result_ = GameResult::Quit;
       return;
