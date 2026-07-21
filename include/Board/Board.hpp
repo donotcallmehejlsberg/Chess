@@ -6,8 +6,8 @@
 
 #include "Board/Coordinate.hpp"
 #include "Board/Square.hpp"
-#include "Pieces/Piece.hpp"
 #include "Movement/Move.hpp"
+#include "Pieces/Piece.hpp"
 
 class Board {
 public:

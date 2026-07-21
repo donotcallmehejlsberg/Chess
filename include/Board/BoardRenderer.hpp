@@ -12,6 +12,7 @@ public:
 private:
   void printSquare(const Square &square) const;
   void printPiece(const Square &square) const;
+  void printColumnLabels(Color color) const;
 };
 
 #endif

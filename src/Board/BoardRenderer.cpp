@@ -4,13 +4,13 @@
 #include <iostream>
 #include <string>
 
+namespace {
 const std::string ANSI_DARK_SQUARE_BACKGROUND = "\033[48;5;94m";
 const std::string ANSI_LIGHT_SQUARE_BACKGROUND = "\033[48;5;223m";
-
 const std::string ANSI_BLACK_PIECE_FOREGROUND = "\033[1;38;5;16m";
 const std::string ANSI_WHITE_PIECE_FOREGROUND = "\033[1;38;5;255m";
-
 const std::string ANSI_RESET = "\033[0m";
+} // namespace
 
 void BoardRenderer::printBoard(const Board &board,
                                const Player &current_player) const {
@@ -27,15 +27,7 @@ void BoardRenderer::printBoard(const Board &board,
       std::cout << std::endl;
     }
 
-    std::cout << "    ";
-
-    for (char column = 'A'; column <= 'H'; column++) {
-      std::cout << column;
-      if (column != 'H') {
-        std::cout << "   ";
-      }
-    }
-    std::cout << std::endl;
+    printColumnLabels(color);
   }
 
   if (color == Color::Black) {
@@ -50,16 +42,30 @@ void BoardRenderer::printBoard(const Board &board,
       std::cout << std::endl;
     }
 
-    std::cout << "    ";
+    printColumnLabels(color);
+  }
+  std::cout << std::endl;
+}
 
+void BoardRenderer::printColumnLabels(Color color) const {
+  std::cout << "    ";
+
+  if (color == Color::White) {
+    for (char column = 'A'; column <= 'H'; column++) {
+      std::cout << column;
+      if (column != 'H') {
+        std::cout << "   ";
+      }
+    }
+  } else {
     for (char column = 'H'; column >= 'A'; column--) {
       std::cout << column;
       if (column != 'A') {
         std::cout << "   ";
       }
     }
-    std::cout << std::endl;
   }
+
   std::cout << std::endl;
 }
 
@@ -71,21 +77,16 @@ void BoardRenderer::printSquare(const Square &square) const {
   }
 }
 
-void BoardRenderer::printPiece(const Square &square) const 
-{
+void BoardRenderer::printPiece(const Square &square) const {
   const Piece *piece = square.getPiece();
-  if (piece == nullptr)
-  {
+  if (piece == nullptr) {
     std::cout << "    " << ANSI_RESET;
     return;
   }
 
-  if (piece->getPieceColor() == Color::White)
-  {
+  if (piece->getPieceColor() == Color::White) {
     std::cout << ANSI_WHITE_PIECE_FOREGROUND;
-  }
-  else
-  {
+  } else {
     std::cout << ANSI_BLACK_PIECE_FOREGROUND;
   }
 
