@@ -29,14 +29,19 @@ void Game::setupGame() {
 }
 
 void Game::switchPlayer() {
-  if (current_player_color_ == Color::White) {
-    current_player_color_ = Color::Black;
-  } else {
-    current_player_color_ = Color::White;
-  }
+  current_player_color_ =
+      current_player_color_ == Color::White ? Color::Black : Color::White;
 }
 
-void Game::printTurnPrompt(Color color) {
+void Game::printWelcomeMessage() const {
+  std::cout << std::endl;
+  std::cout << "         WELCOME TO CHESS!         " << std::endl;
+  std::cout << "          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜          " << std::endl;
+  std::cout << "          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙          " << std::endl;
+  std::cout << std::endl;
+}
+
+void Game::printTurnPrompt(Color color) const {
   if (color == Color::White) {
     std::cout << "White > ";
   } else if (color == Color::Black) {
@@ -72,20 +77,23 @@ void Game::printRules() const {
   std::cout << "  White moves first." << std::endl;
   std::cout << "  You can only move your own pieces." << std::endl;
   std::cout << "  You cannot move onto your own piece." << std::endl;
-  std::cout << "  Captures happen by moving onto an opponent piece." << std::endl;
+  std::cout << "  Captures happen by moving onto an opponent piece."
+            << std::endl;
   std::cout << std::endl;
   std::cout << "Piece movement:" << std::endl;
   std::cout << "  Pawn    moves forward, captures diagonally." << std::endl;
   std::cout << "  Knight  moves in an L shape and can jump." << std::endl;
   std::cout << "  Rook    moves horizontally or vertically." << std::endl;
   std::cout << "  Bishop  moves diagonally." << std::endl;
-  std::cout << "  Queen   moves horizontally, vertically or diagonally." << std::endl;
+  std::cout << "  Queen   moves horizontally, vertically or diagonally."
+            << std::endl;
   std::cout << "  King    moves one square in any direction." << std::endl;
   std::cout << std::endl;
   std::cout << "Ending the game:" << std::endl;
   std::cout << "  Checkmate: a king is in check and has no legal move."
             << std::endl;
-  std::cout << "  Stalemate: the current player has no legal move, but is not in check."
+  std::cout << "  Stalemate: the current player has no legal move, but is not "
+               "in check."
             << std::endl;
   std::cout << "  Draw: both players agree that the game ends without a winner."
             << std::endl;
@@ -100,6 +108,16 @@ void Game::printMainMenu() const {
   std::cout << "  rules  show basic rules" << std::endl;
   std::cout << "  help   show commands" << std::endl;
   std::cout << "  quit   exit" << std::endl;
+}
+
+void Game::printCapturedPieces() const {
+  std::cout << "White captured: ";
+  white_player_.printCapturedPieces();
+  std::cout << std::endl;
+
+  std::cout << "Black captured: ";
+  black_player_.printCapturedPieces();
+  std::cout << std::endl;
 }
 
 bool Game::handleMainMenu() {
@@ -132,59 +150,72 @@ bool Game::handleMainMenu() {
   }
 }
 
+Game::CommandResult Game::handleCommand(const std::string &input) {
+  if (input == "quit") {
+    result_ = GameResult::Quit;
+    return CommandResult::Quit;
+  }
+
+  if (input == "help") {
+    printHelp();
+    return CommandResult::Handled;
+  }
+
+  if (input == "rules") {
+    printRules();
+    return CommandResult::Handled;
+  }
+
+  if (input == "board") {
+    renderer_.printBoard(board_, getCurrentPlayer());
+    return CommandResult::Handled;
+  }
+
+  if (input == "captured") {
+    printCapturedPieces();
+    return CommandResult::Handled;
+  }
+
+  return CommandResult::NotCommand;
+}
+
+bool Game::processMoveInput(const std::string &input) {
+  std::optional<Move> move = move_parser_.handleMove(input);
+  if (!move.has_value()) {
+    std::cout << "Invalid input." << std::endl;
+    return false;
+  }
+
+  bool valid_move =
+      move_validator_.isValidMove(board_, move.value(), current_player_color_);
+  if (valid_move == false) {
+    std::cout << "Invalid move." << std::endl;
+    return false;
+  }
+
+  handleCapture(move.value());
+  board_.movePiece(move.value());
+  switchPlayer();
+  renderer_.printBoard(board_, getCurrentPlayer());
+  return true;
+}
+
 void Game::handleTurn() {
   while (true) {
     printTurnPrompt(current_player_color_);
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
-    if (input == "quit") {
-      result_ = GameResult::Quit;
+
+    const CommandResult command_result = handleCommand(input);
+    if (command_result == CommandResult::Quit) {
       return;
     }
-
-    if (input == "help") {
-      printHelp();
+    if (command_result == CommandResult::Handled) {
       continue;
     }
 
-    if (input == "rules") {
-      printRules();
-      continue;
+    if (processMoveInput(input)) {
+      return;
     }
-
-    if (input == "board") {
-      renderer_.printBoard(board_, getCurrentPlayer());
-      continue;
-    }
-
-    if (input == "captured") {
-      std::cout << "White captured: ";
-      white_player_.printCapturedPieces();
-      std::cout << std::endl;
-
-      std::cout << "Black captured: ";
-      black_player_.printCapturedPieces();
-      std::cout << std::endl;
-
-      continue;
-    }
-
-    std::optional<Move> move = move_parser_.handleMove(input);
-    if (!move.has_value()) {
-      std::cout << "Invalid input." << std::endl;
-      continue;
-    }
-
-    bool valid_move = move_validator_.isValidMove(board_, move.value(),
-                                                  current_player_color_);
-    if (valid_move == false) {
-      std::cout << "Invalid move." << std::endl;
-      continue;
-    }
-    handleCapture(move.value());
-    board_.movePiece(move.value());
-    switchPlayer();
-    renderer_.printBoard(board_, getCurrentPlayer());
-    return;
   }
 }
 
@@ -213,11 +244,7 @@ const Player &Game::getCurrentPlayer() const {
 }
 
 void Game::run() {
-  std::cout << std::endl;
-  std::cout << "         WELCOME TO CHESS!         " << std::endl;
-  std::cout << "          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜          " << std::endl;
-  std::cout << "          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙          " << std::endl;
-  std::cout << std::endl;
+  printWelcomeMessage();
 
   if (!handleMainMenu()) {
     return;
