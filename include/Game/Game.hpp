@@ -36,6 +36,7 @@ private:
   const Player &getCurrentPlayer() const;
 
   void switchPlayer();
+  void handleCapture(const Move &move);
   void handleTurn();
 
 public:
