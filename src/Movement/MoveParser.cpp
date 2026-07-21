@@ -9,6 +9,10 @@ std::optional<Move> MoveParser::handleMove(const std::string &input) const {
     return std::nullopt;
   }
 
+  if (!hasValidSeparator(input)) {
+    return std::nullopt;
+  }
+
   if (!hasValidFromCoordinate(input)) {
     return std::nullopt;
   }
@@ -35,13 +39,19 @@ std::optional<Move> MoveParser::handleMove(const std::string &input) const {
   return Move(from, to);
 }
 
-
 bool MoveParser::isEmpty(const std::string &input) const {
   return input.empty();
 }
 
 bool MoveParser::hasValidLength(const std::string &input) const {
   if (input.length() != 5) {
+    return false;
+  }
+  return true;
+}
+
+bool MoveParser::hasValidSeparator(const std::string &input) const {
+  if (input[2] != ' ') {
     return false;
   }
   return true;

@@ -16,6 +16,8 @@ public:
   bool hasValidFromCoordinate(const std::string &input) const;
   bool hasValidToCoordinate(const std::string &input) const;
   bool hasValidLength(const std::string &input) const;
+  bool hasValidSeparator(const std::string &input) const
+
 };
 
 #endif
