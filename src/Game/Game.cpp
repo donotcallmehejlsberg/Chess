@@ -53,6 +53,18 @@ void Game::handleTurn() {
       return;
     }
 
+    if (input == "captured") {
+      std::cout << "White captured: ";
+      white_player_.printCapturedPieces();
+      std::cout << std::endl;
+
+      std::cout << "Black captured: ";
+      black_player_.printCapturedPieces();
+      std::cout << std::endl;
+
+      continue;
+    }
+
     std::optional<Move> move = move_parser_.handleMove(input);
     if (!move.has_value()) {
       std::cout << "Invalid input." << std::endl;
@@ -65,12 +77,32 @@ void Game::handleTurn() {
       std::cout << "Invalid move." << std::endl;
       continue;
     }
-
+    handleCapture(move.value());
     board_.movePiece(move.value());
     switchPlayer();
     renderer_.printBoard(board_, getCurrentPlayer());
     return;
   }
+}
+
+void Game::handleCapture(const Move &move) {
+  const Piece *target_piece = board_.getPiece(move.getTo());
+  if (target_piece == nullptr) {
+    return;
+  }
+
+  if (target_piece->getPieceColor() == current_player_color_) {
+    return;
+  }
+
+  const PieceType piece_type = target_piece->getPieceType();
+  if (current_player_color_ == Color::White) {
+    white_player_.addCapturedPiece(piece_type);
+  } else {
+    black_player_.addCapturedPiece(piece_type);
+  }
+
+  board_.removePiece(move.getTo());
 }
 
 const Player &Game::getCurrentPlayer() const {
