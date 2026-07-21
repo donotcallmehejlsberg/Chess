@@ -23,12 +23,8 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return false;
   }
 
-  const Piece *target_piece = board.getPiece(to);
-  if (target_piece != nullptr) {
-    if (target_piece->getPieceColor() == color) {
-      return false;
-    }
-    // capture
+  if (isOccupiedByOwnPiece(board, to, color)) {
+    return false;
   }
 
   if (piece->getPieceType() == PieceType::Pawn) {
