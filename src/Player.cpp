@@ -37,8 +37,12 @@ std::string Player::pieceTypeToString(PieceType piece_type) const {
 }
 
 void Player::printCapturedPieces() const {
+  if (captured_pieces_.empty()) {
+    std::cout << "-";
+    return;
+  }
   for (const PieceType piece : captured_pieces_) {
-    std::cout << getColorName() << pieceTypeToString(piece) << std::endl;
+    std::cout << pieceTypeToString(piece) << " ";
   }
 }
 
