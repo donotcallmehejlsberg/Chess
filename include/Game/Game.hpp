@@ -34,6 +34,10 @@ private:
   bool isGameOver() const;
   void setupGame();
   void printTurnPrompt(Color color);
+  void printHelp() const;
+  void printRules() const;
+  void printMainMenu() const;
+  bool handleMainMenu();
 
   const Player &getCurrentPlayer() const;
 
