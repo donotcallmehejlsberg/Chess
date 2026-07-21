@@ -53,6 +53,18 @@ void Game::handleTurn() {
       return;
     }
 
+    if (input == "captured") {
+      std::cout << "White captured: ";
+      white_player_.printCapturedPieces();
+      std::cout << std::endl;
+
+      std::cout << "Black captured: ";
+      black_player_.printCapturedPieces();
+      std::cout << std::endl;
+
+      continue;
+    }
+
     std::optional<Move> move = move_parser_.handleMove(input);
     if (!move.has_value()) {
       std::cout << "Invalid input." << std::endl;
