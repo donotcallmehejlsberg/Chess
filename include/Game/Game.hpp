@@ -7,6 +7,7 @@
 #include "Game/GameResult.hpp"
 #include "Game/GameSetup.hpp"
 #include "Input/InputReader.hpp"
+#include "Input/InputNormalizer.hpp"
 #include "Movement/Move.hpp"
 #include "Movement/MoveParser.hpp"
 #include "Movement/MoveValidator.hpp"
@@ -27,15 +28,21 @@ private:
   MoveValidator move_validator_;
   MoveParser move_parser_;
   InputReader input_reader_;
+  InputNormalizer input_normalizer_;
 
   void printResult() const;
   bool isGameOver() const;
   void setupGame();
   void printTurnPrompt(Color color);
+  void printHelp() const;
+  void printRules() const;
+  void printMainMenu() const;
+  bool handleMainMenu();
 
   const Player &getCurrentPlayer() const;
 
   void switchPlayer();
+  void handleCapture(const Move &move);
   void handleTurn();
 
 public:
