@@ -210,9 +210,22 @@ void Game::handleTurn() {
     handleCapture(move.value());
     board_.movePiece(move.value());
     switchPlayer();
+
     std::optional<Coordinate> checked_king =
         move_validator_.getCheckedKingCoordinate(board_, current_player_color_);
     renderer_.printBoard(board_, getCurrentPlayer(), checked_king);
+
+    if (move_validator_.isCheckmate(board_, current_player_color_)) {
+      printCheckStatus();
+      std::cout << "Checkmate!" << std::endl;
+      if (current_player_color_ == Color::White) {
+        result_ = GameResult::BlackWon;
+        return;
+      } else if (current_player_color_ == Color::Black) {
+        result_ = GameResult::WhiteWon;
+        return;
+      }
+    }
 
     if (checked_king.has_value()) {
       printCheckStatus();
