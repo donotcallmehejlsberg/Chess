@@ -143,6 +143,50 @@ std::optional<Coordinate> MoveValidator::findKingCoordinate(const Board &board,
   return std::nullopt;
 }
 
+bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
+  for (std::size_t from_row = 0; from_row < Board::SIZE; from_row++) {
+    for (std::size_t from_column = 0; from_column < Board::SIZE;
+         from_column++) {
+      Coordinate from(from_row, from_column);
+      const Piece *piece = board.getPiece(from);
+      if (piece == nullptr) {
+        continue;
+      }
+
+      if (piece->getPieceColor() != color) {
+        continue;
+      }
+
+      for (std::size_t to_row = 0; to_row < Board::SIZE; to_row++) {
+        for (std::size_t to_column = 0; to_column < Board::SIZE; to_column++) {
+          Coordinate to(to_row, to_column);
+
+          Move possible_move(from, to);
+
+          if (isValidMove(board, possible_move, color)) {
+            return true;
+          }
+        }
+      }
+    }
+  }
+  return false;
+}
+
+bool MoveValidator::isCheckmate(const Board &board, Color color) const {
+  if (isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
+    return true;
+  }
+  return false;
+}
+
+bool MoveValidator::isStalemate(const Board &board, Color color) const {
+  if (!isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
+    return true;
+  }
+  return false;
+}
+
 bool MoveValidator::isOccupiedByOwnPiece(const Board &board,
                                          const Coordinate &to,
                                          Color color) const {

@@ -167,6 +167,14 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
     return CommandResult::Quit;
   }
 
+  if (input == "resign") {
+    std::cout << getCurrentPlayer().getColorName() << " resigned."
+              << std::endl;
+    result_ = current_player_color_ == Color::White ? GameResult::BlackWon
+                                                    : GameResult::WhiteWon;
+    return CommandResult::Quit;
+  }
+
   if (input == "help") {
     printHelp();
     return CommandResult::Handled;
@@ -223,6 +231,21 @@ bool Game::processMoveInput(const std::string &input) {
   std::optional<Coordinate> checked_king =
       move_validator_.getCheckedKingCoordinate(board_, current_player_color_);
   renderer_.printBoard(board_, getCurrentPlayer(), checked_king);
+
+  if (move_validator_.isCheckmate(board_, current_player_color_)) {
+    printCheckStatus();
+    std::cout << "Checkmate!" << std::endl;
+    result_ = current_player_color_ == Color::White ? GameResult::BlackWon
+                                                    : GameResult::WhiteWon;
+    return true;
+  }
+
+  if (move_validator_.isStalemate(board_, current_player_color_)) {
+    std::cout << "Stalemate!" << std::endl;
+    result_ = GameResult::Draw;
+    return true;
+  }
+
   if (checked_king.has_value()) {
     printCheckStatus();
   }
