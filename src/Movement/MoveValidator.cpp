@@ -3,8 +3,21 @@
 
 bool MoveValidator::isValidMove(const Board &board, const Move &move,
                                 Color color) const {
-  Coordinate from = move.getFrom();
-  Coordinate to = move.getTo();
+  if (!isPieceMoveValid(board, move, color)) {
+    return false;
+  }
+
+  if (wouldLeaveKingInCheck(board, move, color)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool MoveValidator::isPieceMoveValid(const Board &board, const Move &move,
+                                     Color color) const {
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
 
   if (!board.isValidCoordinate(from) || !board.isValidCoordinate(to)) {
     return false;
@@ -51,7 +64,19 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
     return isValidKingMove(board, move, color);
   }
 
-  return true;
+  return false;
+}
+
+bool MoveValidator::wouldLeaveKingInCheck(Board board, const Move &move,
+                                          Color color) const {
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  Piece *moving_piece = board.removePiece(from);
+  board.removePiece(to);
+  board.setPiece(to, moving_piece);
+
+  return isKingInCheck(board, color);
 }
 
 bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
@@ -80,7 +105,7 @@ bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
 
       Move attack_move(coord, king_coord);
 
-      if (isValidMove(board, attack_move, enemy_color)) {
+      if (isPieceMoveValid(board, attack_move, enemy_color)) {
         return true;
       }
     }
