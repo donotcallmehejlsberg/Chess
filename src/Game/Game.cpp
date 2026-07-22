@@ -227,6 +227,12 @@ void Game::handleTurn() {
       }
     }
 
+    if (move_validator_.isStalemate(board_, current_player_color_)) {
+      std::cout << "Stalemate!" << std::endl;
+      result_ = GameResult::Draw;
+      return;
+    }
+
     if (checked_king.has_value()) {
       printCheckStatus();
     }

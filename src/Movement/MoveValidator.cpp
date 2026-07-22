@@ -173,8 +173,15 @@ bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
   return false;
 }
 
-bool MoveValidator::isCheckmate(const Board &board, Color color) {
+bool MoveValidator::isCheckmate(const Board &board, Color color) const {
   if (isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
+    return true;
+  }
+  return false;
+}
+
+bool MoveValidator::isStalemate(const Board &board, Color color) const {
+  if (!isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
     return true;
   }
   return false;
