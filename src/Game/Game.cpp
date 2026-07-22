@@ -155,6 +155,14 @@ void Game::handleTurn() {
       return;
     }
 
+    if (input == "resign") {
+      std::cout << getCurrentPlayer().getColorName() << " resigned."
+                << std::endl;
+      result_ = current_player_color_ == Color::White ? GameResult::BlackWon
+                                                      : GameResult::WhiteWon;
+      return;
+    }
+
     if (input == "help") {
       printHelp();
       continue;
