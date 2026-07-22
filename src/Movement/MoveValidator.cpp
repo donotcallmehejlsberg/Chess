@@ -89,6 +89,15 @@ bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
   return false;
 }
 
+std::optional<Coordinate>
+MoveValidator::getCheckedKingCoordinate(const Board &board, Color color) const {
+  if (!isKingInCheck(board, color)) {
+    return std::nullopt;
+  }
+
+  return findKingCoordinate(board, color);
+}
+
 std::optional<Coordinate> MoveValidator::findKingCoordinate(const Board &board,
                                                             Color color) const {
   for (std::size_t row = 0; row < Board::SIZE; row++) {

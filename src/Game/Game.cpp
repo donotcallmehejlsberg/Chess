@@ -72,20 +72,23 @@ void Game::printRules() const {
   std::cout << "  White moves first." << std::endl;
   std::cout << "  You can only move your own pieces." << std::endl;
   std::cout << "  You cannot move onto your own piece." << std::endl;
-  std::cout << "  Captures happen by moving onto an opponent piece." << std::endl;
+  std::cout << "  Captures happen by moving onto an opponent piece."
+            << std::endl;
   std::cout << std::endl;
   std::cout << "Piece movement:" << std::endl;
   std::cout << "  Pawn    moves forward, captures diagonally." << std::endl;
   std::cout << "  Knight  moves in an L shape and can jump." << std::endl;
   std::cout << "  Rook    moves horizontally or vertically." << std::endl;
   std::cout << "  Bishop  moves diagonally." << std::endl;
-  std::cout << "  Queen   moves horizontally, vertically or diagonally." << std::endl;
+  std::cout << "  Queen   moves horizontally, vertically or diagonally."
+            << std::endl;
   std::cout << "  King    moves one square in any direction." << std::endl;
   std::cout << std::endl;
   std::cout << "Ending the game:" << std::endl;
   std::cout << "  Checkmate: a king is in check and has no legal move."
             << std::endl;
-  std::cout << "  Stalemate: the current player has no legal move, but is not in check."
+  std::cout << "  Stalemate: the current player has no legal move, but is not "
+               "in check."
             << std::endl;
   std::cout << "  Draw: both players agree that the game ends without a winner."
             << std::endl;
@@ -152,7 +155,9 @@ void Game::handleTurn() {
     }
 
     if (input == "board") {
-      renderer_.printBoard(board_, getCurrentPlayer());
+      renderer_.printBoard(board_, getCurrentPlayer(),
+                           move_validator_.getCheckedKingCoordinate(
+                               board_, current_player_color_));
       continue;
     }
 
@@ -183,7 +188,9 @@ void Game::handleTurn() {
     handleCapture(move.value());
     board_.movePiece(move.value());
     switchPlayer();
-    renderer_.printBoard(board_, getCurrentPlayer());
+    renderer_.printBoard(board_, getCurrentPlayer(),
+                         move_validator_.getCheckedKingCoordinate(
+                             board_, current_player_color_));
     return;
   }
 }

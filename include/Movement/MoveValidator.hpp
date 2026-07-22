@@ -4,11 +4,13 @@
 #include "Board/Board.hpp"
 #include "Movement/Move.hpp"
 
+#include <optional>
+
 class MoveValidator {
 private:
   bool isKingInCheck(const Board &board, Color color) const;
-  std::optional<Coordinate> findKingCoordinate(const Board &board, Color color) const;
-
+  std::optional<Coordinate> findKingCoordinate(const Board &board,
+                                               Color color) const;
 
   bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
   bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
@@ -38,6 +40,8 @@ private:
 
 public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;
+  std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
+                                                     Color color) const;
 };
 
 #endif
