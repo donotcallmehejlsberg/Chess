@@ -149,8 +149,7 @@ bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
          from_column++) {
       Coordinate from(from_row, from_column);
       const Piece *piece = board.getPiece(from);
-      if(piece == nullptr)
-      {
+      if (piece == nullptr) {
         continue;
       }
 
@@ -170,6 +169,13 @@ bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
         }
       }
     }
+  }
+  return false;
+}
+
+bool MoveValidator::isCheckmate(const Board &board, Color color) {
+  if (isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
+    return true;
   }
   return false;
 }

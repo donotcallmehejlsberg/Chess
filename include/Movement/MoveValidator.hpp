@@ -46,6 +46,7 @@ public:
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
                                                      Color color) const;
   bool hasAnyLegalMove(const Board &board, Color color) const;
+  bool isCheckmate(const Board &board, Color color);
 };
 
 #endif
