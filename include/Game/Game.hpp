@@ -40,6 +40,7 @@ private:
   void printResult() const;
   void printWelcomeMessage() const;
   void printTurnPrompt(Color color) const;
+  void printCheckStatus() const;
   void printHelp() const;
   void printRules() const;
   void printMainMenu() const;

@@ -49,6 +49,17 @@ void Game::printTurnPrompt(Color color) const {
   }
 }
 
+void Game::printCheckStatus() const {
+  if (move_validator_.getCheckedKingCoordinate(board_, current_player_color_)
+          .has_value()) {
+    std::cout << getCurrentPlayer().getColorName() << " is in check!"
+              << std::endl;
+  } else {
+    std::cout << getCurrentPlayer().getColorName() << " is not in check."
+              << std::endl;
+  }
+}
+
 void Game::printHelp() const {
   std::cout << "Commands:" << std::endl;
   std::cout << "  e2 e4     move a piece" << std::endl;
@@ -166,8 +177,15 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
     return CommandResult::Handled;
   }
 
+  if (input == "check") {
+    printCheckStatus();
+    return CommandResult::Handled;
+  }
+
   if (input == "board") {
-    renderer_.printBoard(board_, getCurrentPlayer());
+    renderer_.printBoard(board_, getCurrentPlayer(),
+                         move_validator_.getCheckedKingCoordinate(
+                             board_, current_player_color_));
     return CommandResult::Handled;
   }
 
@@ -189,14 +207,25 @@ bool Game::processMoveInput(const std::string &input) {
   bool valid_move =
       move_validator_.isValidMove(board_, move.value(), current_player_color_);
   if (valid_move == false) {
-    std::cout << "Invalid move." << std::endl;
+    if (move_validator_
+            .getCheckedKingCoordinate(board_, current_player_color_)
+            .has_value()) {
+      printCheckStatus();
+    } else {
+      std::cout << "Invalid move." << std::endl;
+    }
     return false;
   }
 
   handleCapture(move.value());
   board_.movePiece(move.value());
   switchPlayer();
-  renderer_.printBoard(board_, getCurrentPlayer());
+  std::optional<Coordinate> checked_king =
+      move_validator_.getCheckedKingCoordinate(board_, current_player_color_);
+  renderer_.printBoard(board_, getCurrentPlayer(), checked_king);
+  if (checked_king.has_value()) {
+    printCheckStatus();
+  }
   return true;
 }
 
