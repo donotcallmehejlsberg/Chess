@@ -13,8 +13,7 @@ private:
                                                Color color) const;
   bool isPieceMoveValid(const Board &board, const Move &move,
                         Color color) const;
-  bool wouldLeaveKingInCheck(Board board, const Move &move,
-                             Color color) const;
+  bool wouldLeaveKingInCheck(Board board, const Move &move, Color color) const;
 
   bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
   bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
@@ -41,12 +40,12 @@ private:
 
   bool isMovingOwnPiece(const Piece *piece, Color color) const;
   bool isSameSquare(const Move &move) const;
-  
 
 public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
                                                      Color color) const;
+  bool hasAnyLegalMove(const Board &board, Color color) const;
 };
 
 #endif
