@@ -54,6 +54,61 @@ bool MoveValidator::isValidMove(const Board &board, const Move &move,
   return true;
 }
 
+bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
+
+  std::optional<Coordinate> king_coordinate = findKingCoordinate(board, color);
+
+  if (!king_coordinate.has_value()) {
+    return false;
+  }
+
+  Coordinate king_coord = king_coordinate.value();
+  Color enemy_color = color == Color::White ? Color::Black : Color::White;
+
+  for (std::size_t row = 0; row < Board::SIZE; row++) {
+    for (std::size_t column = 0; column < Board::SIZE; column++) {
+      Coordinate coord(row, column);
+      const Piece *opponent_piece = board.getPiece(coord);
+
+      if (opponent_piece == nullptr) {
+        continue;
+      }
+
+      if (opponent_piece->getPieceColor() != enemy_color) {
+        continue;
+      }
+
+      Move attack_move(coord, king_coord);
+
+      if (isValidMove(board, attack_move, enemy_color)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+std::optional<Coordinate> MoveValidator::findKingCoordinate(const Board &board,
+                                                            Color color) const {
+  for (std::size_t row = 0; row < Board::SIZE; row++) {
+    for (std::size_t column = 0; column < Board::SIZE; column++) {
+      Coordinate coordinate(row, column);
+      const Piece *piece = board.getPiece(coordinate);
+
+      if (piece == nullptr) {
+        continue;
+      }
+
+      if (piece->getPieceType() == PieceType::King &&
+          piece->getPieceColor() == color) {
+        return coordinate;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 bool MoveValidator::isOccupiedByOwnPiece(const Board &board,
                                          const Coordinate &to,
                                          Color color) const {
