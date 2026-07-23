@@ -74,6 +74,29 @@ bool MoveParser::hasValidFromCoordinate(const std::string &input) const {
   return true;
 }
 
+std::optional<Coordinate>
+MoveParser::parseCoordinate(const std::string &input) const {
+  if (input.length() != 2) {
+    return std::nullopt;
+  }
+
+  const char &file = input[0];
+  const char &rank = input[1];
+
+  if (file < 'a' || file > 'h') {
+    return std::nullopt;
+  }
+
+  if (rank < '1' || rank > '8') {
+    return std::nullopt;
+  }
+
+  const std::size_t column = file - 'a';
+  const std::size_t row = '8' - rank;
+
+  return Coordinate(row, column);
+}
+
 bool MoveParser::hasValidToCoordinate(const std::string &input) const {
   if (!hasValidLength(input)) {
     return false;

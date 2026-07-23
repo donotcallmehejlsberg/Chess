@@ -61,7 +61,8 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
       {"quit", &Game::handleQuit},         {"resign", &Game::handleResign},
       {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
       {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
-      {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer}};
+      {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer},
+      {"moves", &Game::handleLegalMoves}};
   const auto command = commands.find(input);
   if (command == commands.end()) {
     return CommandResult::NotCommand;
@@ -90,6 +91,28 @@ Game::CommandResult Game::handleDrawOffer() {
   }
 
   handleInvalidInput();
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleLegalMoves() {
+  std::cout << "Enter square: ";
+
+  std::string input = input_normalizer_.normalize(input_reader_.readLine());
+
+  std::optional<Coordinate> from = move_parser_.parseCoordinate(input);
+  if (!from.has_value()) {
+    handleInvalidInput();
+    return CommandResult::Handled;
+  }
+
+  std::vector<Coordinate> legal_moves = move_validator_.getLegalMovesForPiece(
+      board_, from.value(), current_player_color_);
+
+  renderer_.printBoard(
+      board_, getCurrentPlayer(),
+      move_validator_.getCheckedKingCoordinate(board_, current_player_color_),
+      legal_moves);
+
   return CommandResult::Handled;
 }
 

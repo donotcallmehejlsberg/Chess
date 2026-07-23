@@ -49,7 +49,7 @@ private:
 
   const Player &getCurrentPlayer() const;
   const Player &getOpponentPlayer() const;
-  
+
   void switchPlayer();
   void setWinnerByOpponent();
   void handleCapture(const Move &move);
@@ -68,6 +68,7 @@ private:
   CommandResult handleCheck();
   CommandResult handleCaptured();
   CommandResult handleDrawOffer();
+  CommandResult handleLegalMoves();
 
   bool processMoveInput(const std::string &input);
   bool handleMainMenu();

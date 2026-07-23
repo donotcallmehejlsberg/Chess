@@ -18,6 +18,8 @@ public:
   bool hasValidToCoordinate(const std::string &input) const;
   bool hasValidLength(const std::string &input) const;
   bool hasValidSeparator(const std::string &input) const;
+  std::optional<Coordinate> parseCoordinate(const std::string &input) const;
+
 
 };
 
