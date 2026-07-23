@@ -61,14 +61,36 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
       {"quit", &Game::handleQuit},         {"resign", &Game::handleResign},
       {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
       {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
-      {"captured", &Game::handleCaptured},
-  };
+      {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer}};
   const auto command = commands.find(input);
   if (command == commands.end()) {
     return CommandResult::NotCommand;
   }
 
   return (this->*(command->second))();
+}
+
+Game::CommandResult Game::handleDrawOffer() {
+  std::cout << getCurrentPlayer().getColorName() << " offered a draw."
+            << std::endl;
+
+  std::cout << getOpponentPlayer().getColorName()
+            << ", accept draw? (yes/no): ";
+
+  std::string answer = input_normalizer_.normalize(input_reader_.readLine());
+
+  if (answer == "yes") {
+    result_ = GameResult::Draw;
+    return CommandResult::GameEnded;
+  }
+
+  if (answer == "no") {
+    std::cout << "Draw offer declined." << std::endl;
+    return CommandResult::Handled;
+  }
+
+  handleInvalidInput();
+  return CommandResult::Handled;
 }
 
 Game::CommandResult Game::handleResign() {
@@ -215,6 +237,10 @@ const Player &Game::getCurrentPlayer() const {
   return current_player_color_ == Color::White ? white_player_ : black_player_;
 }
 
+const Player &Game::getOpponentPlayer() const {
+  return current_player_color_ == Color::White ? black_player_ : white_player_;
+}
+
 void Game::run() {
   printWelcomeMessage();
 
@@ -243,7 +269,7 @@ void Game::printResult() const {
   } else if (result_ == GameResult::BlackWon) {
     std::cout << "Black won!" << std::endl;
   } else if (result_ == GameResult::Draw) {
-    std::cout << "Draw!" << std::endl;
+    std::cout << "The game ended in a draw." << std::endl;
   } else if (result_ == GameResult::Quit) {
     std::cout << getCurrentPlayer().getColorName() << " quit the game."
               << std::endl;
