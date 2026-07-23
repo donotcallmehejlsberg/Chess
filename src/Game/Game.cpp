@@ -1,23 +1,11 @@
 #include "Game/Game.hpp"
 
 #include <iostream>
+#include <map>
 
 Game::Game()
     : white_player_(Color::White), black_player_(Color::Black),
       current_player_color_(Color::White), result_(GameResult::InProgress) {}
-
-void Game::printResult() const {
-  if (result_ == GameResult::WhiteWon) {
-    std::cout << "White won!" << std::endl;
-  } else if (result_ == GameResult::BlackWon) {
-    std::cout << "Black won!" << std::endl;
-  } else if (result_ == GameResult::Draw) {
-    std::cout << "Draw!" << std::endl;
-  } else if (result_ == GameResult::Quit) {
-    std::cout << getCurrentPlayer().getColorName() << " quit the game."
-              << std::endl;
-  }
-}
 
 bool Game::isGameOver() const { return result_ != GameResult::InProgress; }
 
@@ -33,6 +21,214 @@ void Game::switchPlayer() {
       current_player_color_ == Color::White ? Color::Black : Color::White;
 }
 
+void Game::setWinnerByOpponent() {
+  result_ = current_player_color_ == Color::White ? GameResult::BlackWon
+                                                  : GameResult::WhiteWon;
+}
+
+bool Game::handleMainMenu() {
+  while (true) {
+    printMainMenu();
+    std::cout << "> ";
+
+    std::string input = input_normalizer_.normalize(input_reader_.readLine());
+
+    if (input == "start") {
+      return true;
+    }
+
+    if (input == "rules") {
+      printRules();
+      continue;
+    }
+
+    if (input == "help") {
+      printHelp();
+      continue;
+    }
+
+    if (input == "quit") {
+      std::cout << "Goodbye." << std::endl;
+      return false;
+    }
+
+    std::cout << "Invalid command." << std::endl;
+  }
+}
+
+Game::CommandResult Game::handleCommand(const std::string &input) {
+  static const std::map<std::string, CommandHandler> commands = {
+      {"quit", &Game::handleQuit},         {"resign", &Game::handleResign},
+      {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
+      {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
+      {"captured", &Game::handleCaptured},
+  };
+  const auto command = commands.find(input);
+  if (command == commands.end()) {
+    return CommandResult::NotCommand;
+  }
+
+  return (this->*(command->second))();
+}
+
+Game::CommandResult Game::handleResign() {
+  std::cout << getCurrentPlayer().getColorName() << " resigned." << std::endl;
+  setWinnerByOpponent();
+  return CommandResult::GameEnded;
+}
+
+Game::CommandResult Game::handleQuit() {
+  result_ = GameResult::Quit;
+  return CommandResult::GameEnded;
+}
+
+Game::CommandResult Game::handleBoard() {
+  renderer_.printBoard(
+      board_, getCurrentPlayer(),
+      move_validator_.getCheckedKingCoordinate(board_, current_player_color_));
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleHelp() {
+  printHelp();
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleRules() {
+  printRules();
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleCheck() {
+  printCheckStatus();
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleCaptured() {
+  printCapturedPieces();
+  return CommandResult::Handled;
+}
+
+bool Game::handleInvalidInput() const {
+  std::cout << "Invalid input." << std::endl;
+  return false;
+}
+
+bool Game::handleInvalidMove() const {
+  if (move_validator_.getCheckedKingCoordinate(board_, current_player_color_)
+          .has_value()) {
+    printCheckStatus();
+  } else {
+    std::cout << "Invalid move." << std::endl;
+  }
+
+  return false;
+}
+
+void Game::executeMove(const Move &move) {
+  handleCapture(move);
+  board_.movePiece(move);
+  switchPlayer();
+}
+
+void Game::finishTurnAfterMove() {
+  std::optional<Coordinate> checked_king =
+      move_validator_.getCheckedKingCoordinate(board_, current_player_color_);
+
+  renderer_.printBoard(board_, getCurrentPlayer(), checked_king);
+
+  if (move_validator_.isCheckmate(board_, current_player_color_)) {
+    printCheckStatus();
+    std::cout << "Checkmate!" << std::endl;
+    setWinnerByOpponent();
+    return;
+  }
+
+  if (move_validator_.isStalemate(board_, current_player_color_)) {
+    std::cout << "Stalemate!" << std::endl;
+    result_ = GameResult::Draw;
+    return;
+  }
+
+  if (checked_king.has_value()) {
+    printCheckStatus();
+  }
+}
+
+bool Game::processMoveInput(const std::string &input) {
+  std::optional<Move> move = move_parser_.handleMove(input);
+  if (!move.has_value()) {
+    return handleInvalidInput();
+  }
+
+  if (!move_validator_.isValidMove(board_, move.value(),
+                                   current_player_color_)) {
+    return handleInvalidMove();
+  }
+
+  executeMove(move.value());
+  finishTurnAfterMove();
+
+  return true;
+}
+
+void Game::handleTurn() {
+  while (true) {
+    printTurnPrompt(current_player_color_);
+    std::string input = input_normalizer_.normalize(input_reader_.readLine());
+
+    const CommandResult command_result = handleCommand(input);
+    if (command_result == CommandResult::GameEnded) {
+      return;
+    }
+    if (command_result == CommandResult::Handled) {
+      continue;
+    }
+
+    if (processMoveInput(input)) {
+      return;
+    }
+  }
+}
+
+void Game::handleCapture(const Move &move) {
+  const Piece *target_piece = board_.getPiece(move.getTo());
+  if (target_piece == nullptr) {
+    return;
+  }
+
+  if (target_piece->getPieceColor() == current_player_color_) {
+    return;
+  }
+
+  const PieceType piece_type = target_piece->getPieceType();
+  if (current_player_color_ == Color::White) {
+    white_player_.addCapturedPiece(piece_type);
+  } else {
+    black_player_.addCapturedPiece(piece_type);
+  }
+
+  board_.removePiece(move.getTo());
+}
+
+const Player &Game::getCurrentPlayer() const {
+  return current_player_color_ == Color::White ? white_player_ : black_player_;
+}
+
+void Game::run() {
+  printWelcomeMessage();
+
+  if (!handleMainMenu()) {
+    return;
+  }
+
+  setupGame();
+  while (result_ == GameResult::InProgress) {
+    handleTurn();
+  }
+  printResult();
+}
+
 void Game::printWelcomeMessage() const {
   std::cout << std::endl;
   std::cout << "         WELCOME TO CHESS!         " << std::endl;
@@ -41,11 +237,16 @@ void Game::printWelcomeMessage() const {
   std::cout << std::endl;
 }
 
-void Game::printTurnPrompt(Color color) const {
-  if (color == Color::White) {
-    std::cout << "White > ";
-  } else if (color == Color::Black) {
-    std::cout << "Black > ";
+void Game::printResult() const {
+  if (result_ == GameResult::WhiteWon) {
+    std::cout << "White won!" << std::endl;
+  } else if (result_ == GameResult::BlackWon) {
+    std::cout << "Black won!" << std::endl;
+  } else if (result_ == GameResult::Draw) {
+    std::cout << "Draw!" << std::endl;
+  } else if (result_ == GameResult::Quit) {
+    std::cout << getCurrentPlayer().getColorName() << " quit the game."
+              << std::endl;
   }
 }
 
@@ -57,6 +258,24 @@ void Game::printCheckStatus() const {
   } else {
     std::cout << getCurrentPlayer().getColorName() << " is not in check."
               << std::endl;
+  }
+}
+
+void Game::printCapturedPieces() const {
+  std::cout << "White captured: ";
+  white_player_.printCapturedPieces();
+  std::cout << std::endl;
+
+  std::cout << "Black captured: ";
+  black_player_.printCapturedPieces();
+  std::cout << std::endl;
+}
+
+void Game::printTurnPrompt(Color color) const {
+  if (color == Color::White) {
+    std::cout << "White > ";
+  } else if (color == Color::Black) {
+    std::cout << "Black > ";
   }
 }
 
@@ -119,192 +338,4 @@ void Game::printMainMenu() const {
   std::cout << "  rules  show basic rules" << std::endl;
   std::cout << "  help   show commands" << std::endl;
   std::cout << "  quit   exit" << std::endl;
-}
-
-void Game::printCapturedPieces() const {
-  std::cout << "White captured: ";
-  white_player_.printCapturedPieces();
-  std::cout << std::endl;
-
-  std::cout << "Black captured: ";
-  black_player_.printCapturedPieces();
-  std::cout << std::endl;
-}
-
-bool Game::handleMainMenu() {
-  while (true) {
-    printMainMenu();
-    std::cout << "> ";
-
-    std::string input = input_normalizer_.normalize(input_reader_.readLine());
-
-    if (input == "start") {
-      return true;
-    }
-
-    if (input == "rules") {
-      printRules();
-      continue;
-    }
-
-    if (input == "help") {
-      printHelp();
-      continue;
-    }
-
-    if (input == "quit") {
-      std::cout << "Goodbye." << std::endl;
-      return false;
-    }
-
-    std::cout << "Invalid command." << std::endl;
-  }
-}
-
-Game::CommandResult Game::handleCommand(const std::string &input) {
-  if (input == "quit") {
-    result_ = GameResult::Quit;
-    return CommandResult::Quit;
-  }
-
-  if (input == "resign") {
-    std::cout << getCurrentPlayer().getColorName() << " resigned."
-              << std::endl;
-    result_ = current_player_color_ == Color::White ? GameResult::BlackWon
-                                                    : GameResult::WhiteWon;
-    return CommandResult::Quit;
-  }
-
-  if (input == "help") {
-    printHelp();
-    return CommandResult::Handled;
-  }
-
-  if (input == "rules") {
-    printRules();
-    return CommandResult::Handled;
-  }
-
-  if (input == "check") {
-    printCheckStatus();
-    return CommandResult::Handled;
-  }
-
-  if (input == "board") {
-    renderer_.printBoard(board_, getCurrentPlayer(),
-                         move_validator_.getCheckedKingCoordinate(
-                             board_, current_player_color_));
-    return CommandResult::Handled;
-  }
-
-  if (input == "captured") {
-    printCapturedPieces();
-    return CommandResult::Handled;
-  }
-
-  return CommandResult::NotCommand;
-}
-
-bool Game::processMoveInput(const std::string &input) {
-  std::optional<Move> move = move_parser_.handleMove(input);
-  if (!move.has_value()) {
-    std::cout << "Invalid input." << std::endl;
-    return false;
-  }
-
-  bool valid_move =
-      move_validator_.isValidMove(board_, move.value(), current_player_color_);
-  if (valid_move == false) {
-    if (move_validator_
-            .getCheckedKingCoordinate(board_, current_player_color_)
-            .has_value()) {
-      printCheckStatus();
-    } else {
-      std::cout << "Invalid move." << std::endl;
-    }
-    return false;
-  }
-
-  handleCapture(move.value());
-  board_.movePiece(move.value());
-  switchPlayer();
-  std::optional<Coordinate> checked_king =
-      move_validator_.getCheckedKingCoordinate(board_, current_player_color_);
-  renderer_.printBoard(board_, getCurrentPlayer(), checked_king);
-
-  if (move_validator_.isCheckmate(board_, current_player_color_)) {
-    printCheckStatus();
-    std::cout << "Checkmate!" << std::endl;
-    result_ = current_player_color_ == Color::White ? GameResult::BlackWon
-                                                    : GameResult::WhiteWon;
-    return true;
-  }
-
-  if (move_validator_.isStalemate(board_, current_player_color_)) {
-    std::cout << "Stalemate!" << std::endl;
-    result_ = GameResult::Draw;
-    return true;
-  }
-
-  if (checked_king.has_value()) {
-    printCheckStatus();
-  }
-  return true;
-}
-
-void Game::handleTurn() {
-  while (true) {
-    printTurnPrompt(current_player_color_);
-    std::string input = input_normalizer_.normalize(input_reader_.readLine());
-
-    const CommandResult command_result = handleCommand(input);
-    if (command_result == CommandResult::Quit) {
-      return;
-    }
-    if (command_result == CommandResult::Handled) {
-      continue;
-    }
-
-    if (processMoveInput(input)) {
-      return;
-    }
-  }
-}
-
-void Game::handleCapture(const Move &move) {
-  const Piece *target_piece = board_.getPiece(move.getTo());
-  if (target_piece == nullptr) {
-    return;
-  }
-
-  if (target_piece->getPieceColor() == current_player_color_) {
-    return;
-  }
-
-  const PieceType piece_type = target_piece->getPieceType();
-  if (current_player_color_ == Color::White) {
-    white_player_.addCapturedPiece(piece_type);
-  } else {
-    black_player_.addCapturedPiece(piece_type);
-  }
-
-  board_.removePiece(move.getTo());
-}
-
-const Player &Game::getCurrentPlayer() const {
-  return current_player_color_ == Color::White ? white_player_ : black_player_;
-}
-
-void Game::run() {
-  printWelcomeMessage();
-
-  if (!handleMainMenu()) {
-    return;
-  }
-
-  setupGame();
-  while (result_ == GameResult::InProgress) {
-    handleTurn();
-  }
-  printResult();
 }

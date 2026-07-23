@@ -17,7 +17,8 @@
 
 class Game {
 private:
-  enum class CommandResult { NotCommand, Handled, Quit };
+  enum class CommandResult { NotCommand, Handled, GameEnded };
+  using CommandHandler = CommandResult (Game::*)();
 
   Board board_;
 
@@ -47,10 +48,25 @@ private:
   void printCapturedPieces() const;
 
   const Player &getCurrentPlayer() const;
-  void switchPlayer();
   
+  void switchPlayer();
+  void setWinnerByOpponent();
   void handleCapture(const Move &move);
+
+  bool handleInvalidInput() const;
+  bool handleInvalidMove() const;
+  void executeMove(const Move &move);
+  void finishTurnAfterMove();
+
   CommandResult handleCommand(const std::string &input);
+  CommandResult handleResign();
+  CommandResult handleQuit();
+  CommandResult handleBoard();
+  CommandResult handleHelp();
+  CommandResult handleRules();
+  CommandResult handleCheck();
+  CommandResult handleCaptured();
+
   bool processMoveInput(const std::string &input);
   bool handleMainMenu();
   void handleTurn();
