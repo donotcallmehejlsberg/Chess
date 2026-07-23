@@ -144,8 +144,27 @@ Game::CommandResult Game::handleResign() {
 }
 
 Game::CommandResult Game::handleQuit() {
-  result_ = GameResult::Quit;
-  return CommandResult::GameEnded;
+  std::cout << getCurrentPlayer().getColorName()
+            << ", quitting during a game counts as resignation." << std::endl;
+  std::cout << "Are you sure? (yes/no): ";
+
+  while (true) {
+    std::string answer = input_normalizer_.normalize(input_reader_.readLine());
+
+    if (answer == "yes") {
+      std::cout << getCurrentPlayer().getColorName() << " quit the game."
+                << std::endl;
+      setWinnerByOpponent();
+      return CommandResult::GameEnded;
+    }
+
+    if (answer == "no") {
+      std::cout << "Quit cancelled." << std::endl;
+      return CommandResult::Handled;
+    }
+
+    std::cout << "Please answer yes or no: ";
+  }
 }
 
 Game::CommandResult Game::handleBoard() {
@@ -355,7 +374,7 @@ void Game::printHelp() const {
   std::cout << "  board     print the board" << std::endl;
   std::cout << "  captured  show captured pieces" << std::endl;
   std::cout << "  help      show commands" << std::endl;
-  std::cout << "  quit      exit the game" << std::endl;
+  std::cout << "  quit      exit the game, or resign during a game" << std::endl;
   std::cout << "  status    show current player, result, score and captures"
             << std::endl;
   std::cout << "  moves     show legal moves for selected square" << std::endl;
