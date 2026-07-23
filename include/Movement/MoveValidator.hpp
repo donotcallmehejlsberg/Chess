@@ -5,6 +5,7 @@
 #include "Movement/Move.hpp"
 
 #include <optional>
+#include <vector>
 
 class MoveValidator {
 private:
@@ -45,6 +46,11 @@ public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
                                                      Color color) const;
+
+  std::vector<Coordinate> getLegalMovesForPiece(const Board &board,
+                                                const Coordinate &from,
+                                                Color color) const;
+
   bool hasAnyLegalMove(const Board &board, Color color) const;
   bool isCheckmate(const Board &board, Color color) const;
   bool isStalemate(const Board &board, Color color) const;

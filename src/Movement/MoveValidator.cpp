@@ -114,6 +114,32 @@ bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
   return false;
 }
 
+std::vector<Coordinate>
+MoveValidator::getLegalMovesForPiece(const Board &board, const Coordinate &from,
+                                     Color color) const {
+  std::vector<Coordinate> legal_moves;
+  const Piece *piece = board.getPiece(from);
+  if (piece == nullptr) {
+    return legal_moves;
+  }
+
+  if (piece->getPieceColor() != color) {
+    return legal_moves;
+  }
+
+  for (std::size_t row = 0; row < Board::SIZE; row++) {
+    for (std::size_t column = 0; column < Board::SIZE; column++) {
+      Coordinate to(row, column);
+      Move move(from, to);
+
+      if (isValidMove(board, move, color)) {
+        legal_moves.push_back(to);
+      }
+    }
+  }
+  return legal_moves;
+}
+
 std::optional<Coordinate>
 MoveValidator::getCheckedKingCoordinate(const Board &board, Color color) const {
   if (!isKingInCheck(board, color)) {
