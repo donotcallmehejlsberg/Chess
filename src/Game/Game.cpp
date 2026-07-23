@@ -95,25 +95,46 @@ Game::CommandResult Game::handleDrawOffer() {
 }
 
 Game::CommandResult Game::handleLegalMoves() {
-  std::cout << "Enter square: ";
+  while (true) {
+    std::cout << "Enter square (or cancel): ";
 
-  std::string input = input_normalizer_.normalize(input_reader_.readLine());
+    std::string input = input_normalizer_.normalize(input_reader_.readLine());
+    if (input == "cancel") {
+      return CommandResult::Handled;
+    }
 
-  std::optional<Coordinate> from = move_parser_.parseCoordinate(input);
-  if (!from.has_value()) {
-    handleInvalidInput();
+    std::optional<Coordinate> from = move_parser_.parseCoordinate(input);
+    if (!from.has_value()) {
+      handleInvalidInput();
+      continue;
+    }
+
+    const Piece *piece = board_.getPiece(from.value());
+    if (piece == nullptr) {
+      std::cout << "There is no piece on this square." << std::endl;
+      continue;
+    }
+
+    if (piece->getPieceColor() != current_player_color_) {
+      std::cout << "Please choose your piece." << std::endl;
+      continue;
+    }
+
+    std::vector<Coordinate> legal_moves = move_validator_.getLegalMovesForPiece(
+        board_, from.value(), current_player_color_);
+
+    if (legal_moves.empty()) {
+      std::cout << "This piece has no legal moves." << std::endl;
+      return CommandResult::Handled;
+    }
+
+    renderer_.printBoard(
+        board_, getCurrentPlayer(),
+        move_validator_.getCheckedKingCoordinate(board_, current_player_color_),
+        legal_moves);
+
     return CommandResult::Handled;
   }
-
-  std::vector<Coordinate> legal_moves = move_validator_.getLegalMovesForPiece(
-      board_, from.value(), current_player_color_);
-
-  renderer_.printBoard(
-      board_, getCurrentPlayer(),
-      move_validator_.getCheckedKingCoordinate(board_, current_player_color_),
-      legal_moves);
-
-  return CommandResult::Handled;
 }
 
 Game::CommandResult Game::handleResign() {
