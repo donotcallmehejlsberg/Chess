@@ -66,7 +66,8 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
       {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
       {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
       {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer},
-      {"moves", &Game::handleLegalMoves},  {"history", &Game::handleHistory}};
+      {"moves", &Game::handleLegalMoves},  {"status", &Game::handleStatus},
+      {"history", &Game::handleHistory}};
   const auto command = commands.find(input);
   if (command == commands.end()) {
     return CommandResult::NotCommand;
@@ -195,6 +196,11 @@ Game::CommandResult Game::handleCheck() {
 
 Game::CommandResult Game::handleCaptured() {
   printCapturedPieces();
+  return CommandResult::Handled;
+}
+
+Game::CommandResult Game::handleStatus() {
+  printStatus();
   return CommandResult::Handled;
 }
 
@@ -428,6 +434,39 @@ void Game::printCapturedPieces() const {
   std::cout << "Black captured: ";
   black_player_.printCapturedPieces();
   std::cout << std::endl;
+}
+
+void Game::printStatus() const {
+  std::cout << "Game status:" << std::endl;
+  std::cout << "  Current player: " << getCurrentPlayer().getColorName()
+            << std::endl;
+
+  std::cout << "  Result: ";
+  if (result_ == GameResult::InProgress) {
+    std::cout << "In progress";
+  } else if (result_ == GameResult::WhiteWon) {
+    std::cout << "White won";
+  } else if (result_ == GameResult::BlackWon) {
+    std::cout << "Black won";
+  } else if (result_ == GameResult::Draw) {
+    std::cout << "Draw";
+  } else if (result_ == GameResult::Quit) {
+    std::cout << "Quit";
+  }
+  std::cout << std::endl;
+
+  std::cout << "  Check: ";
+  if (move_validator_.getCheckedKingCoordinate(board_, current_player_color_)
+          .has_value()) {
+    std::cout << "Yes";
+  } else {
+    std::cout << "No";
+  }
+  std::cout << std::endl;
+
+  std::cout << "  White score: " << white_player_.getScore() << std::endl;
+  std::cout << "  Black score: " << black_player_.getScore() << std::endl;
+  printCapturedPieces();
 }
 
 void Game::printTurnPrompt(Color color) const {

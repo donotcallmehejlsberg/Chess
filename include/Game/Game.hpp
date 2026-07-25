@@ -50,6 +50,7 @@ private:
   void printRules() const;
   void printMainMenu() const;
   void printCapturedPieces() const;
+  void printStatus() const;
 
   const Player &getCurrentPlayer() const;
   const Player &getOpponentPlayer() const;
@@ -73,6 +74,7 @@ private:
   CommandResult handleCaptured();
   CommandResult handleDrawOffer();
   CommandResult handleLegalMoves();
+  CommandResult handleStatus();
 
   CommandResult handleHistory();
 
