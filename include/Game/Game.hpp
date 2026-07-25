@@ -58,6 +58,7 @@ private:
   void switchPlayer();
   void setWinnerByOpponent();
   void handleCapture(const Move &move);
+  int getPieceValue(PieceType piece_type) const;
 
   bool handleInvalidInput() const;
   bool handleInvalidMove() const;

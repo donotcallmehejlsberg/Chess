@@ -26,6 +26,23 @@ void Game::setWinnerByOpponent() {
                                                   : GameResult::WhiteWon;
 }
 
+int Game::getPieceValue(PieceType piece_type) const {
+  switch (piece_type) {
+  case PieceType::Pawn:
+    return 1;
+  case PieceType::Knight:
+  case PieceType::Bishop:
+    return 3;
+  case PieceType::Rook:
+    return 5;
+  case PieceType::Queen:
+    return 9;
+  case PieceType::King:
+    return 0;
+  }
+  return 0;
+}
+
 Player &Game::getPlayerByColor(Color color) {
   return color == Color::White ? white_player_ : black_player_;
 }
@@ -360,8 +377,12 @@ void Game::handleCapture(const Move &move) {
   const PieceType piece_type = target_piece->getPieceType();
   if (current_player_color_ == Color::White) {
     white_player_.addCapturedPiece(piece_type);
+    white_player_.setScore(white_player_.getScore() +
+                           getPieceValue(piece_type));
   } else {
     black_player_.addCapturedPiece(piece_type);
+    black_player_.setScore(black_player_.getScore() +
+                           getPieceValue(piece_type));
   }
 
   board_.removePiece(move.getTo());
