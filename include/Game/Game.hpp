@@ -6,6 +6,7 @@
 #include "Color.hpp"
 #include "Game/GameResult.hpp"
 #include "Game/GameSetup.hpp"
+#include "History/MoveHistory.hpp"
 #include "Input/InputNormalizer.hpp"
 #include "Input/InputReader.hpp"
 #include "Movement/Move.hpp"
@@ -35,6 +36,8 @@ private:
   MoveParser move_parser_;
   InputReader input_reader_;
   InputNormalizer input_normalizer_;
+
+  MoveHistory move_history_;
 
   bool isGameOver() const;
   void setupGame();
@@ -70,6 +73,8 @@ private:
   CommandResult handleCaptured();
   CommandResult handleDrawOffer();
   CommandResult handleLegalMoves();
+
+  CommandResult handleHistory();
 
   void handlePromotion(const Move &move);
   std::unique_ptr<Piece> createPromotionPiece(Color color);

@@ -66,7 +66,7 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
       {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
       {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
       {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer},
-      {"moves", &Game::handleLegalMoves}};
+      {"moves", &Game::handleLegalMoves},  {"history", &Game::handleHistory}};
   const auto command = commands.find(input);
   if (command == commands.end()) {
     return CommandResult::NotCommand;
@@ -316,6 +316,7 @@ bool Game::processMoveInput(const std::string &input) {
   }
 
   executeMove(move.value());
+  move_history_.addMove(input);
   finishTurnAfterMove();
 
   return true;
@@ -412,6 +413,11 @@ void Game::printCheckStatus() const {
     std::cout << getCurrentPlayer().getColorName() << " is not in check."
               << std::endl;
   }
+}
+
+Game::CommandResult Game::handleHistory() {
+  move_history_.printHistory();
+  return CommandResult::Handled;
 }
 
 void Game::printCapturedPieces() const {
