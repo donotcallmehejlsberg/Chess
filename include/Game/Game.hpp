@@ -70,6 +70,11 @@ private:
   CommandResult handleDrawOffer();
   CommandResult handleLegalMoves();
 
+  void handlePromotion(const Move &move);
+  bool canPromote(const Piece* piece, const Coordinate &coordinate) const;
+
+  Player &getPlayerByColor(Color color);
+
   bool processMoveInput(const std::string &input);
   bool handleMainMenu();
   void handleTurn();

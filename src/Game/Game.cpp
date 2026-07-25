@@ -26,6 +26,12 @@ void Game::setWinnerByOpponent() {
                                                   : GameResult::WhiteWon;
 }
 
+Player &Game::getPlayerByColor(Color color)
+{
+  return color == Color::White ? white_player_ : black_player_;
+}
+
+
 bool Game::handleMainMenu() {
   while (true) {
     printMainMenu();
@@ -210,9 +216,47 @@ bool Game::handleInvalidMove() const {
   return false;
 }
 
+bool Game::canPromote(const Piece *piece, const Coordinate &coordinate) const {
+  if (piece == nullptr || piece->getPieceType() != PieceType::Pawn) {
+    return false;
+  }
+
+  if (piece->getPieceColor() == Color::White) {
+    return coordinate.getRow() == 0;
+  }
+
+  if (piece->getPieceColor() == Color::Black) {
+    return coordinate.getRow() == 7;
+  }
+
+  return false;
+}
+
+void Game::handlePromotion(const Move &move) {
+  Coordinate to = move.getTo();
+  const Piece *piece = board_.getPiece(to);
+  if (!canPromote(piece, to)) {
+    return;
+  }
+
+  Player &player = getPlayerByColor(piece->getPieceColor());
+  
+  std::cout << player.getColorName()
+          << " pawn reached the last rank and was promoted to Queen!"
+          << std::endl;
+
+  Piece *promoted_piece = player.promotePiece(
+      piece, std::make_unique<Queen>(piece->getPieceColor()));
+
+  if (promoted_piece != nullptr) {
+    board_.setPiece(to, promoted_piece);
+  }
+}
+
 void Game::executeMove(const Move &move) {
   handleCapture(move);
   board_.movePiece(move);
+  handlePromotion(move);
   switchPlayer();
 }
 
@@ -374,7 +418,8 @@ void Game::printHelp() const {
   std::cout << "  board     print the board" << std::endl;
   std::cout << "  captured  show captured pieces" << std::endl;
   std::cout << "  help      show commands" << std::endl;
-  std::cout << "  quit      exit the game, or resign during a game" << std::endl;
+  std::cout << "  quit      exit the game, or resign during a game"
+            << std::endl;
   std::cout << "  status    show current player, result, score and captures"
             << std::endl;
   std::cout << "  moves     show legal moves for selected square" << std::endl;
