@@ -88,8 +88,24 @@ bool Game::processMoveInput(const std::string &input) {
     return handleInvalidMove();
   }
 
-  executeMove(move.value());
-  move_history_.addMove(input);
+  const Move &valid_move = move.value();
+  const Piece *moving_piece = board_.getPiece(valid_move.getFrom());
+  if (moving_piece == nullptr) {
+    return handleInvalidMove();
+  }
+
+  const Piece *captured_piece = board_.getPiece(valid_move.getTo());
+  std::optional<PieceType> captured_piece_type = std::nullopt;
+  if (captured_piece != nullptr) {
+    captured_piece_type = captured_piece->getPieceType();
+  }
+
+  MoveRecord record(current_player_color_, valid_move.getFrom(),
+                    valid_move.getTo(), moving_piece->getPieceType(),
+                    captured_piece_type);
+
+  executeMove(valid_move);
+  move_history_.addRecord(record);
   finishTurnAfterMove();
 
   return true;
