@@ -257,16 +257,19 @@ void Game::handlePromotion(const Move &move) {
   }
 
   Player &player = getPlayerByColor(piece->getPieceColor());
+  std::unique_ptr<Piece> new_piece =
+      createPromotionPiece(piece->getPieceColor());
 
-  std::cout << player.getColorName()
-            << " pawn reached the last rank and was promoted to Queen!"
-            << std::endl;
+  const std::string promoted_piece_name =
+      player.pieceTypeToString(new_piece->getPieceType());
 
-  Piece *promoted_piece =
-      player.promotePiece(piece, createPromotionPiece(piece->getPieceColor()));
+  Piece *promoted_piece = player.promotePiece(piece, std::move(new_piece));
 
   if (promoted_piece != nullptr) {
     board_.setPiece(to, promoted_piece);
+    std::cout << player.getColorName()
+              << " pawn reached the last rank and was promoted to "
+              << promoted_piece_name << "!" << std::endl;
   }
 }
 
