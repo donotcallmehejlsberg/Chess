@@ -42,6 +42,8 @@ private:
   bool isMovingOwnPiece(const Piece *piece, Color color) const;
   bool isSameSquare(const Move &move) const;
 
+  bool isValidCastlingMove(const Board &board, const Move &move, Color color);
+
 public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
