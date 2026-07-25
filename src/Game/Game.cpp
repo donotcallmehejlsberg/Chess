@@ -26,11 +26,9 @@ void Game::setWinnerByOpponent() {
                                                   : GameResult::WhiteWon;
 }
 
-Player &Game::getPlayerByColor(Color color)
-{
+Player &Game::getPlayerByColor(Color color) {
   return color == Color::White ? white_player_ : black_player_;
 }
-
 
 bool Game::handleMainMenu() {
   while (true) {
@@ -232,6 +230,25 @@ bool Game::canPromote(const Piece *piece, const Coordinate &coordinate) const {
   return false;
 }
 
+std::unique_ptr<Piece> Game::createPromotionPiece(Color color) {
+  while (true) {
+    std::cout << "Promote to (queen, rook, bishop, knight): ";
+
+    std::string input = input_normalizer_.normalize(input_reader_.readLine());
+    if (input == "queen") {
+      return std::make_unique<Queen>(color);
+    } else if (input == "rook") {
+      return std::make_unique<Rook>(color);
+    } else if (input == "bishop") {
+      return std::make_unique<Bishop>(color);
+    } else if (input == "knight") {
+      return std::make_unique<Knight>(color);
+    }
+    handleInvalidInput();
+    continue;
+  }
+}
+
 void Game::handlePromotion(const Move &move) {
   Coordinate to = move.getTo();
   const Piece *piece = board_.getPiece(to);
@@ -240,13 +257,13 @@ void Game::handlePromotion(const Move &move) {
   }
 
   Player &player = getPlayerByColor(piece->getPieceColor());
-  
-  std::cout << player.getColorName()
-          << " pawn reached the last rank and was promoted to Queen!"
-          << std::endl;
 
-  Piece *promoted_piece = player.promotePiece(
-      piece, std::make_unique<Queen>(piece->getPieceColor()));
+  std::cout << player.getColorName()
+            << " pawn reached the last rank and was promoted to Queen!"
+            << std::endl;
+
+  Piece *promoted_piece =
+      player.promotePiece(piece, createPromotionPiece(piece->getPieceColor()));
 
   if (promoted_piece != nullptr) {
     board_.setPiece(to, promoted_piece);

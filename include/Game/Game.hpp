@@ -71,6 +71,7 @@ private:
   CommandResult handleLegalMoves();
 
   void handlePromotion(const Move &move);
+  std::unique_ptr<Piece> createPromotionPiece(Color color);
   bool canPromote(const Piece* piece, const Coordinate &coordinate) const;
 
   Player &getPlayerByColor(Color color);
