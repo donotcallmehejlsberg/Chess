@@ -5,21 +5,7 @@ object-oriented design, move validation, game flow, and readable terminal UI.
 
 ## Preview
 
-```text
-         WELCOME TO CHESS!
-          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜
-          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙
-
-8  ♜  ♞  ♝  ♛  ♚  ♝  ♞  ♜
-7  ♟  ♟  ♟  ♟  ♟  ♟  ♟  ♟
-6
-5
-4
-3
-2  ♙  ♙  ♙  ♙  ♙  ♙  ♙  ♙
-1  ♖  ♘  ♗  ♕  ♔  ♗  ♘  ♖
-    A   B   C   D   E   F   G   H
-```
+![Chess board preview](assets/board-preview.png)
 
 ## Features
 
