@@ -327,20 +327,27 @@ void Game::handlePromotion(const Move &move) {
 
 std::unique_ptr<Piece> Game::createPromotionPiece(Color color) {
   while (true) {
-    std::cout << "Promote to (queen, rook, bishop, knight): ";
+    std::cout << "Pawn promotion!" << std::endl;
+    std::cout << "Choose piece:" << std::endl;
+    std::cout << "  q - Queen" << std::endl;
+    std::cout << "  r - Rook" << std::endl;
+    std::cout << "  b - Bishop" << std::endl;
+    std::cout << "  n - Knight" << std::endl;
+    std::cout << "> ";
 
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
-    if (input == "queen") {
+    if (input == "queen" || input == "q") {
       return std::make_unique<Queen>(color);
-    } else if (input == "rook") {
+    } else if (input == "rook" || input == "r") {
       return std::make_unique<Rook>(color);
-    } else if (input == "bishop") {
+    } else if (input == "bishop" || input == "b") {
       return std::make_unique<Bishop>(color);
-    } else if (input == "knight") {
+    } else if (input == "knight" || input == "n") {
       return std::make_unique<Knight>(color);
     }
-    handleInvalidInput();
-    continue;
+    std::cout << "Invalid promotion choice. Please choose queen, rook, "
+                 "bishop, or knight."
+              << std::endl;
   }
 }
 
