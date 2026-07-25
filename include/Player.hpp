@@ -29,6 +29,8 @@ public:
   void addPiece(std::unique_ptr<Piece> piece);
   void addCapturedPiece(PieceType piece_type);
 
+  Piece *promotePiece(const Piece *old_piece, std::unique_ptr<Piece> new_piece);
+
   std::string pieceTypeToString(PieceType piece_type) const;
   void printCapturedPieces() const;
 

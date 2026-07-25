@@ -18,6 +18,22 @@ void Player::addCapturedPiece(PieceType piece_type) {
   captured_pieces_.push_back(piece_type);
 }
 
+Piece *Player::promotePiece(const Piece *old_piece,
+                            std::unique_ptr<Piece> new_piece) {
+  if (old_piece == nullptr || new_piece == nullptr ||
+      old_piece->getPieceType() != PieceType::Pawn) {
+    return nullptr;
+  }
+
+  for (auto &piece : pieces_) {
+    if (piece.get() == old_piece) {
+      piece = std::move(new_piece);
+      return piece.get();
+    }
+  }
+  return nullptr;
+}
+
 std::string Player::pieceTypeToString(PieceType piece_type) const {
   switch (piece_type) {
   case PieceType::Pawn:
