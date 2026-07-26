@@ -3,6 +3,7 @@
 #include "Color.hpp"
 
 #include <iostream>
+#include <optional>
 #include <string>
 
 std::string MoveHistory::coordinateToText(const Coordinate &coordinate) const {
@@ -83,3 +84,10 @@ void MoveHistory::printHistory() const {
 }
 
 bool MoveHistory::isEmpty() const { return records_.empty(); }
+
+std::optional<MoveRecord> MoveHistory::getLastRecord() const {
+  if (records_.empty()) {
+    return std::nullopt;
+  }
+  return records_.back();
+}

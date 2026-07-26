@@ -3,6 +3,7 @@
 
 #include "History/MoveRecord.hpp"
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,6 +19,7 @@ public:
   void addRecord(const MoveRecord &record);
   void printHistory() const;
   bool isEmpty() const;
+  std::optional<MoveRecord> getLastRecord() const;
 };
 
 #endif
