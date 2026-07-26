@@ -83,8 +83,9 @@ bool Game::processMoveInput(const std::string &input) {
     return handleInvalidInput();
   }
 
-  if (!move_validator_.isValidMove(board_, move.value(),
-                                   current_player_color_)) {
+  const std::optional<MoveRecord> last_record = move_history_.getLastRecord();
+  if (!move_validator_.isValidMove(board_, move.value(), current_player_color_,
+                                   last_record)) {
     return handleInvalidMove();
   }
 
@@ -95,6 +96,12 @@ bool Game::processMoveInput(const std::string &input) {
   }
 
   const Piece *captured_piece = board_.getPiece(valid_move.getTo());
+  if (captured_piece == nullptr &&
+      move_validator_.isEnPassantMove(board_, valid_move,
+                                      current_player_color_, last_record)) {
+    captured_piece = board_.getPiece(last_record.value().getTo());
+  }
+
   std::optional<PieceType> captured_piece_type = std::nullopt;
   if (captured_piece != nullptr) {
     captured_piece_type = captured_piece->getPieceType();
@@ -267,6 +274,7 @@ void Game::executeMove(const Move &move) {
     executeCastling(move);
   } else {
     handleCapture(move);
+    handleEnPassantCapture(move);
     board_.movePiece(move);
     handlePromotion(move);
   }
@@ -346,6 +354,27 @@ void Game::handleCapture(const Move &move) {
   }
 
   board_.removePiece(move.getTo());
+}
+
+void Game::handleEnPassantCapture(const Move &move) {
+  const std::optional<MoveRecord> last_record = move_history_.getLastRecord();
+  if (!move_validator_.isEnPassantMove(board_, move, current_player_color_,
+                                       last_record)) {
+    return;
+  }
+
+  const Coordinate captured_coordinate = last_record.value().getTo();
+  const Piece *captured_piece = board_.getPiece(captured_coordinate);
+  if (captured_piece == nullptr) {
+    return;
+  }
+
+  const PieceType piece_type = captured_piece->getPieceType();
+  Player &player = getPlayerByColor(current_player_color_);
+  player.addCapturedPiece(piece_type);
+  player.setScore(player.getScore() + getPieceValue(piece_type));
+
+  board_.removePiece(captured_coordinate);
 }
 
 void Game::handlePromotion(const Move &move) {
