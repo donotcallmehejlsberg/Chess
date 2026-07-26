@@ -45,6 +45,8 @@ private:
   bool isValidCastlingMove(const Board &board, const Move &move, Color color);
   bool isCastlingPathClear(const Board &board, const Coordinate &king_coord_from, const Coordinate &rook_coord);
 
+  bool wouldPassThroughCheck(Board board, const Move &move,
+                                          Color color) const;
 
 public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;

@@ -79,6 +79,27 @@ bool MoveValidator::wouldLeaveKingInCheck(Board board, const Move &move,
   return isKingInCheck(board, color);
 }
 
+bool MoveValidator::wouldPassThroughCheck(Board board, const Move &move,
+                                          Color color) const {
+  const Coordinate &king_from = move.getFrom();
+  const Coordinate &king_to = move.getTo();
+  int direction = 0;
+
+  if (king_to.getColumn() > king_from.getColumn()) {
+    direction = 1;
+  } else if (king_to.getColumn() < king_from.getColumn()) {
+    direction = -1;
+  }
+
+  int middle_column = static_cast<std::size_t>(
+      static_cast<int>(king_from.getColumn()) + direction);
+
+  Coordinate middle_square(king_from.getRow(), middle_column);
+  Move middle_move(king_from, middle_square);
+
+  return wouldLeaveKingInCheck(board, middle_move, color);
+}
+
 bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
 
   std::optional<Coordinate> king_coordinate = findKingCoordinate(board, color);
@@ -517,6 +538,10 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
   }
 
   if (isKingInCheck(board, color)) {
+    return false;
+  }
+
+  if (wouldPassThroughCheck(board, move, color)) {
     return false;
   }
 
