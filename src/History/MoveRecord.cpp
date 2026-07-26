@@ -1,4 +1,5 @@
 #include "History/MoveRecord.hpp"
+#include <cstdlib>
 
 MoveRecord::MoveRecord(Color player_color, const Coordinate &from,
                        const Coordinate &to, PieceType moved_piece,
@@ -22,4 +23,24 @@ std::optional<PieceType> MoveRecord::getCapturedPiece() const {
 
 std::optional<PieceType> MoveRecord::getPromotedTo() const {
   return promoted_to_;
+}
+
+bool MoveRecord::wasPawnDoubleMove() const {
+  if (moved_piece_ != PieceType::Pawn) {
+    return false;
+  }
+
+  if (to_.getColumn() != from_.getColumn()) {
+    return false;
+  }
+
+  const int row_change =
+      static_cast<int>(to_.getRow()) - static_cast<int>(from_.getRow());
+  
+  if(std::abs(row_change) != 2)
+  {
+    return false;
+  }
+
+  return true;
 }

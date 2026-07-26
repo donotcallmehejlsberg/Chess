@@ -28,6 +28,8 @@ public:
   PieceType getMovedPiece() const;
   std::optional<PieceType> getCapturedPiece() const;
   std::optional<PieceType> getPromotedTo() const;
+
+  bool wasPawnDoubleMove() const;
 };
 
 #endif
