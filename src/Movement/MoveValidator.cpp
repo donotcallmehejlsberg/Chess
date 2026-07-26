@@ -497,5 +497,32 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
     return false;
   }
 
+  std::size_t rook_column = 0;
+
+  if (column_difference > 0) {
+    rook_column = 7;
+  } else {
+    rook_column = 0;
+  }
+
+  Coordinate rook_coord(king_coord_from.getRow(), rook_column);
+  const Piece *rook = board.getPiece(rook_coord);
+  if (rook == nullptr || rook->getPieceType() != PieceType::Rook ||
+      rook->getPieceColor() != color) {
+    return false;
+  }
+
+  if (!isCastlingPathClear(board, king_coord_from, rook_coord)) {
+    return false;
+  }
+
+  if (isKingInCheck(board, color)) {
+    return false;
+  }
+
+  if (wouldLeaveKingInCheck(board, move, color)) {
+    return false;
+  }
+
   return true;
 }
