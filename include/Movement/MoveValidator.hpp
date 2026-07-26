@@ -2,6 +2,7 @@
 #define MOVE_VALIDATOR_HPP
 
 #include "Board/Board.hpp"
+#include "History/MoveRecord.hpp"
 #include "Movement/Move.hpp"
 
 #include <optional>
@@ -15,6 +16,9 @@ private:
   bool isPieceMoveValid(const Board &board, const Move &move,
                         Color color) const;
   bool wouldLeaveKingInCheck(Board board, const Move &move, Color color) const;
+  bool wouldLeaveKingInCheckAfterEnPassant(Board board, const Move &move,
+                                           Color color,
+                                           const MoveRecord &last_record) const;
 
   bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
   bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
@@ -53,7 +57,12 @@ private:
   bool isPawnDoubleMove(const Board &board, const Move &move, Color color);
 
 public:
-  bool isValidMove(const Board &board, const Move &move, Color color) const;
+  bool isValidMove(const Board &board, const Move &move, Color color,
+                   const std::optional<MoveRecord> &last_record) const;
+
+  bool isEnPassantMove(const Board &board, const Move &move, Color color,
+                       const std::optional<MoveRecord> &last_record) const;
+
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
                                                      Color color) const;
 

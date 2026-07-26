@@ -1,13 +1,55 @@
 #include "Movement/MoveValidator.hpp"
 #include <cstdlib>
 
-bool MoveValidator::isValidMove(const Board &board, const Move &move,
-                                Color color) const {
-  if (!isPieceMoveValid(board, move, color)) {
+bool MoveValidator::isValidMove(
+    const Board &board, const Move &move, Color color,
+    const std::optional<MoveRecord> &last_record) const {
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  if (!board.isValidCoordinate(from) || !board.isValidCoordinate(to)) {
     return false;
   }
 
-  if (wouldLeaveKingInCheck(board, move, color)) {
+  if (isSameSquare(move)) {
+    return false;
+  }
+
+  const Piece *piece = board.getPiece(from);
+  if (piece == nullptr) {
+    return false;
+  }
+
+  if (!isMovingOwnPiece(piece, color)) {
+    return false;
+  }
+
+  if (isOccupiedByOwnPiece(board, to, color)) {
+    return false;
+  }
+
+  const bool en_passant_move =
+      piece->getPieceType() == PieceType::Pawn &&
+      isEnPassantMove(board, move, color, last_record);
+
+  bool valid_piece_move = false;
+  if (piece->getPieceType() == PieceType::Pawn) {
+    valid_piece_move = isValidPawnMove(board, move, color) || en_passant_move;
+  } else {
+    valid_piece_move = isPieceMoveValid(board, move, color);
+  }
+
+  if (!valid_piece_move) {
+    return false;
+  }
+
+  if (en_passant_move &&
+      wouldLeaveKingInCheckAfterEnPassant(
+          board, move, color, last_record.value())) {
+    return false;
+  }
+
+  if (!en_passant_move && wouldLeaveKingInCheck(board, move, color)) {
     return false;
   }
 
@@ -76,6 +118,20 @@ bool MoveValidator::wouldLeaveKingInCheck(Board board, const Move &move,
   Piece *moving_piece = board.removePiece(from);
   board.removePiece(to);
   board.setPiece(to, moving_piece);
+
+  return isKingInCheck(board, color);
+}
+
+bool MoveValidator::wouldLeaveKingInCheckAfterEnPassant(
+    Board board, const Move &move, Color color,
+    const MoveRecord &last_record) const {
+  Piece *moving_piece = board.removePiece(move.getFrom());
+  if (moving_piece == nullptr) {
+    return true;
+  }
+
+  board.removePiece(last_record.getTo());
+  board.setPiece(move.getTo(), moving_piece);
 
   return isKingInCheck(board, color);
 }
@@ -410,6 +466,66 @@ bool MoveValidator::isPawnDoubleMove(const Board &board, const Move &move,
     return !board.isOccupied(middle_square) && !board.isOccupied(to);
   }
   return false;
+}
+
+bool MoveValidator::isEnPassantMove(
+    const Board &board, const Move &move, Color color,
+    const std::optional<MoveRecord> &last_record) const {
+  if (!last_record.has_value()) {
+    return false;
+  }
+
+  const Piece *pawn = board.getPiece(move.getFrom());
+  if (pawn == nullptr || pawn->getPieceType() != PieceType::Pawn ||
+      !isMovingOwnPiece(pawn, color)) {
+    return false;
+  }
+
+  if (board.isOccupied(move.getTo())) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  const MoveRecord &last = last_record.value();
+  if (!last.wasPawnDoubleMove()) {
+    return false;
+  }
+  if (last.getPlayerColor() == color) {
+    return false;
+  }
+
+  const int direction = color == Color::White ? -1 : 1;
+
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+  const int column_change =
+      static_cast<int>(to.getColumn()) - static_cast<int>(from.getColumn());
+
+  if (row_change != direction) {
+    return false;
+  }
+
+  if (std::abs(column_change) != 1) {
+    return false;
+  }
+
+  if (last.getTo().getRow() != from.getRow()) {
+    return false;
+  }
+
+  if (last.getTo().getColumn() != to.getColumn()) {
+    return false;
+  }
+
+  const Piece *enemy_pawn = board.getPiece(last.getTo());
+  if (enemy_pawn == nullptr || enemy_pawn->getPieceType() != PieceType::Pawn ||
+      enemy_pawn->getPieceColor() == color) {
+    return false;
+  }
+
+  return true;
 }
 
 bool MoveValidator::isValidPawnMove(const Board &board, const Move &move,
