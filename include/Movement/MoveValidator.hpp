@@ -42,8 +42,8 @@ private:
   bool isMovingOwnPiece(const Piece *piece, Color color) const;
   bool isSameSquare(const Move &move) const;
 
-  bool isValidCastlingMove(const Board &board, const Move &move, Color color);
-  bool isCastlingPathClear(const Board &board, const Coordinate &king_coord_from, const Coordinate &rook_coord);
+  bool isValidCastlingMove(const Board &board, const Move &move, Color color) const;
+  bool isCastlingPathClear(const Board &board, const Coordinate &king_coord_from, const Coordinate &rook_coord) const;
 
   bool wouldPassThroughCheck(Board board, const Move &move,
                                           Color color) const;

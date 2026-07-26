@@ -61,7 +61,8 @@ bool MoveValidator::isPieceMoveValid(const Board &board, const Move &move,
   }
 
   if (piece->getPieceType() == PieceType::King) {
-    return isValidKingMove(board, move, color);
+    return isValidKingMove(board, move, color) ||
+           isValidCastlingMove(board, move, color);
   }
 
   return false;
@@ -472,7 +473,7 @@ bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
 
 bool MoveValidator::isCastlingPathClear(const Board &board,
                                         const Coordinate &king_coord_from,
-                                        const Coordinate &rook_coord) {
+                                        const Coordinate &rook_coord) const {
   int direction = 0;
 
   if (king_coord_from.getColumn() > rook_coord.getColumn()) {
@@ -497,7 +498,7 @@ bool MoveValidator::isCastlingPathClear(const Board &board,
 }
 
 bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
-                                        Color color) {
+                                        Color color) const{
   Coordinate king_coord_from = move.getFrom();
   Coordinate king_coord_to = move.getTo();
 
