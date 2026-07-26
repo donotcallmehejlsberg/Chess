@@ -551,3 +551,28 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
 
   return true;
 }
+
+bool MoveValidator::isCastlingMove(const Board &board, const Move &move,
+                                   Color color) {
+  Coordinate king_coord_from = move.getFrom();
+  Coordinate king_coord_to = move.getTo();
+
+  const Piece *king = board.getPiece(king_coord_from);
+  if (king == nullptr || king->getPieceType() != PieceType::King ||
+      king->getPieceColor() != color) {
+    return false;
+  }
+
+  int column_difference = static_cast<int>(king_coord_to.getColumn()) -
+                          static_cast<int>(king_coord_from.getColumn());
+
+  if (std::abs(column_difference) != 2) {
+    return false;
+  }
+
+  if (king_coord_to.getRow() != king_coord_from.getRow()) {
+    return false;
+  }
+
+  return true;
+}

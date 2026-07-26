@@ -60,6 +60,7 @@ public:
   bool hasAnyLegalMove(const Board &board, Color color) const;
   bool isCheckmate(const Board &board, Color color) const;
   bool isStalemate(const Board &board, Color color) const;
+  bool isCastlingMove(const Board &board, const Move &move, Color color);
 };
 
 #endif
