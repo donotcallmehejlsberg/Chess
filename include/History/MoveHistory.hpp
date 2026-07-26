@@ -3,6 +3,7 @@
 
 #include "History/MoveRecord.hpp"
 
+#include <optional>
 #include <string>
 #include <vector>
 
