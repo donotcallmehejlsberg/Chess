@@ -386,6 +386,32 @@ bool MoveValidator::isValidKnightMove(const Board &board, const Move &move,
   return false;
 }
 
+bool MoveValidator::isPawnDoubleMove(const Board &board, const Move &move,
+                                     Color color) {
+  const Piece *pawn = board.getPiece(move.getFrom());
+  if (pawn == nullptr || pawn->getPieceType() != PieceType::Pawn ||
+      !isMovingOwnPiece(pawn, color)) {
+    return false;
+  }
+
+  const Coordinate &from = move.getFrom();
+  const Coordinate &to = move.getTo();
+
+  if (from.getColumn() != to.getColumn()) {
+    return false;
+  }
+
+  const int direction = color == Color::White ? -1 : 1;
+  const int row_change =
+      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
+
+  if (row_change == direction * 2 && isPawnOnStartingRank(pawn, from)) {
+    Coordinate middle_square(from.getRow() + direction, from.getColumn());
+    return !board.isOccupied(middle_square) && !board.isOccupied(to);
+  }
+  return false;
+}
+
 bool MoveValidator::isValidPawnMove(const Board &board, const Move &move,
                                     Color color) const {
   const Piece *pawn = board.getPiece(move.getFrom());
@@ -498,7 +524,7 @@ bool MoveValidator::isCastlingPathClear(const Board &board,
 }
 
 bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
-                                        Color color) const{
+                                        Color color) const {
   Coordinate king_coord_from = move.getFrom();
   Coordinate king_coord_to = move.getTo();
 
