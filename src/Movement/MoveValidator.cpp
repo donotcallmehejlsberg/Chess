@@ -449,6 +449,32 @@ bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
   return true;
 }
 
+bool MoveValidator::isCastlingPathClear(const Board &board,
+                                        const Coordinate &king_coord_from,
+                                        const Coordinate &rook_coord) {
+  int direction = 0;
+
+  if (king_coord_from.getColumn() > rook_coord.getColumn()) {
+    direction = -1;
+  } else if (king_coord_from.getColumn() < rook_coord.getColumn()) {
+    direction = 1;
+  }
+  int current_row = static_cast<int>(king_coord_from.getRow());
+  int current_column =
+      static_cast<int>(king_coord_from.getColumn()) + direction;
+
+  while (current_column != static_cast<int>(rook_coord.getColumn())) {
+    Coordinate current(current_row, current_column);
+
+    if (board.isOccupied(current)) {
+      return false;
+    }
+    current_column += direction;
+  }
+
+  return true;
+}
+
 bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
                                         Color color) {
   Coordinate king_coord_from = move.getFrom();

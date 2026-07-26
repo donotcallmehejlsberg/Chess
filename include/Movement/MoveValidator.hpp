@@ -43,6 +43,8 @@ private:
   bool isSameSquare(const Move &move) const;
 
   bool isValidCastlingMove(const Board &board, const Move &move, Color color);
+  bool isCastlingPathClear(const Board &board, const Coordinate &king_coord_from, const Coordinate &rook_coord);
+
 
 public:
   bool isValidMove(const Board &board, const Move &move, Color color) const;
