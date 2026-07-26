@@ -247,10 +247,41 @@ Game::CommandResult Game::handleHistory() {
 }
 
 void Game::executeMove(const Move &move) {
-  handleCapture(move);
-  board_.movePiece(move);
-  handlePromotion(move);
+  if (move_validator_.isCastlingMove(board_, move, current_player_color_)) {
+    executeCastling(move);
+  } else {
+    handleCapture(move);
+    board_.movePiece(move);
+    handlePromotion(move);
+  }
   switchPlayer();
+}
+
+void Game::executeCastling(const Move &move) {
+  Coordinate king_coord_from = move.getFrom();
+  Coordinate king_coord_to = move.getTo();
+
+  int column_difference = static_cast<int>(king_coord_to.getColumn()) -
+                          static_cast<int>(king_coord_from.getColumn());
+
+  std::size_t rook_from_column = 0;
+  std::size_t rook_to_column = 0;
+
+  if (column_difference > 0) {
+    rook_from_column = 7;
+    rook_to_column = 5;
+  } else {
+    rook_from_column = 0;
+    rook_to_column = 3;
+  }
+
+  Coordinate rook_from(king_coord_from.getRow(), rook_from_column);
+  Coordinate rook_to(king_coord_from.getRow(), rook_to_column);
+
+  Move rook_move(rook_from, rook_to);
+
+  board_.movePiece(move);
+  board_.movePiece(rook_move);
 }
 
 void Game::finishTurnAfterMove() {

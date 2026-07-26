@@ -63,6 +63,8 @@ private:
   void executeMove(const Move &move);
   void finishTurnAfterMove();
   void handleCapture(const Move &move);
+  void executeCastling(const Move &move);
+
 
   // Handles pawn promotion when a pawn reaches the last rank.
   void handlePromotion(const Move &move);
