@@ -1,6 +1,6 @@
 #include "Pieces/Piece.hpp"
 
-Piece::Piece(Color color, PieceType piece_type, bool has_moved)
+Piece::Piece(Color color, PieceType piece_type)
     : color_(color), piece_type_(piece_type), has_moved_(false) {}
 
 Color Piece::getPieceColor() const { return color_; }

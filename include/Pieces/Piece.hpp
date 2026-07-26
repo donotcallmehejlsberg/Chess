@@ -13,7 +13,7 @@ private:
   bool has_moved_;
 
 public:
-  Piece(Color color, PieceType piece_type, bool has_moved);
+  Piece(Color color, PieceType piece_type);
 
   virtual ~Piece() = default;
   Piece(const Piece &other) = delete;
