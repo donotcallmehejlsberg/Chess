@@ -10,9 +10,10 @@ class Piece {
 private:
   Color color_;
   PieceType piece_type_;
+  bool has_moved_;
 
 public:
-  Piece(Color color, PieceType piece_type);
+  Piece(Color color, PieceType piece_type, bool has_moved);
 
   virtual ~Piece() = default;
   Piece(const Piece &other) = delete;
@@ -21,6 +22,9 @@ public:
   Color getPieceColor() const;
   PieceType getPieceType() const;
   std::string getSymbol() const;
+
+  bool hasMoved() const;
+  void markMoved();
 
   int getValue() const;
 };

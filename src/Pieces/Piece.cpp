@@ -1,7 +1,7 @@
 #include "Pieces/Piece.hpp"
 
-Piece::Piece(Color color, PieceType piece_type)
-    : color_(color), piece_type_(piece_type) {}
+Piece::Piece(Color color, PieceType piece_type, bool has_moved)
+    : color_(color), piece_type_(piece_type), has_moved_(false) {}
 
 Color Piece::getPieceColor() const { return color_; }
 
@@ -41,3 +41,14 @@ std::string Piece::getSymbol() const {
   }
   return "";
 }
+
+bool Piece::hasMoved() const
+{
+  return has_moved_;
+}
+
+void Piece::markMoved()
+{
+  has_moved_ = true;
+}
+
