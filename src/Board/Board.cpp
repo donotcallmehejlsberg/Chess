@@ -49,5 +49,6 @@ void Board::movePiece(const Move &move) {
   if (moving_piece == nullptr) {
     return;
   }
+  moving_piece->markMoved();
   setPiece(move.getTo(), moving_piece);
 }
