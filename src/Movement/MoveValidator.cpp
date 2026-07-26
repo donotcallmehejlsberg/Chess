@@ -503,7 +503,7 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
 
   const Piece *king = board.getPiece(king_coord_from);
   if (king == nullptr || king->getPieceType() != PieceType::King ||
-      king->getPieceColor() != color) {
+      king->getPieceColor() != color || king->hasMoved()) {
     return false;
   }
 
@@ -529,7 +529,7 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
   Coordinate rook_coord(king_coord_from.getRow(), rook_column);
   const Piece *rook = board.getPiece(rook_coord);
   if (rook == nullptr || rook->getPieceType() != PieceType::Rook ||
-      rook->getPieceColor() != color) {
+      rook->getPieceColor() != color || rook->hasMoved()) {
     return false;
   }
 
