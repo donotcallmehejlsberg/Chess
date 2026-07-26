@@ -210,7 +210,7 @@ MoveValidator::getLegalMovesForPiece(const Board &board, const Coordinate &from,
       Coordinate to(row, column);
       Move move(from, to);
 
-      if (isValidMove(board, move, color)) {
+      if (isValidMove(board, move, color, std::nullopt)) {
         legal_moves.push_back(to);
       }
     }
@@ -267,7 +267,7 @@ bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
 
           Move possible_move(from, to);
 
-          if (isValidMove(board, possible_move, color)) {
+          if (isValidMove(board, possible_move, color, std::nullopt)) {
             return true;
           }
         }
