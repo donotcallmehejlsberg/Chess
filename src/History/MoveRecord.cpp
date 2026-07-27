@@ -1,12 +1,16 @@
 #include "History/MoveRecord.hpp"
+
 #include <cstdlib>
 
 MoveRecord::MoveRecord(Color player_color, const Coordinate &from,
                        const Coordinate &to, PieceType moved_piece,
                        std::optional<PieceType> captured_piece,
                        std::optional<PieceType> promoted_to)
-    : player_color_(player_color), from_(from), to_(to),
-      moved_piece_(moved_piece), captured_piece_(captured_piece),
+    : player_color_(player_color),
+      from_(from),
+      to_(to),
+      moved_piece_(moved_piece),
+      captured_piece_(captured_piece),
       promoted_to_(promoted_to) {}
 
 Color MoveRecord::getPlayerColor() const { return player_color_; }
@@ -36,9 +40,8 @@ bool MoveRecord::wasPawnDoubleMove() const {
 
   const int row_change =
       static_cast<int>(to_.getRow()) - static_cast<int>(from_.getRow());
-  
-  if(std::abs(row_change) != 2)
-  {
+
+  if (std::abs(row_change) != 2) {
     return false;
   }
 

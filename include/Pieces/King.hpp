@@ -4,7 +4,7 @@
 #include "Pieces/Piece.hpp"
 
 class King : public Piece {
-public:
+ public:
   King(Color color);
 };
 

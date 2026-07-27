@@ -1,10 +1,10 @@
 #include "History/MoveHistory.hpp"
 
-#include "Color.hpp"
-
 #include <iostream>
 #include <optional>
 #include <string>
+
+#include "Color.hpp"
 
 std::string MoveHistory::coordinateToText(const Coordinate &coordinate) const {
   const char file = static_cast<char>('a' + coordinate.getColumn());
@@ -18,18 +18,18 @@ std::string MoveHistory::coordinateToText(const Coordinate &coordinate) const {
 
 std::string MoveHistory::pieceTypeToText(PieceType piece_type) const {
   switch (piece_type) {
-  case PieceType::Pawn:
-    return "Pawn";
-  case PieceType::Knight:
-    return "Knight";
-  case PieceType::Bishop:
-    return "Bishop";
-  case PieceType::Rook:
-    return "Rook";
-  case PieceType::Queen:
-    return "Queen";
-  case PieceType::King:
-    return "King";
+    case PieceType::Pawn:
+      return "Pawn";
+    case PieceType::Knight:
+      return "Knight";
+    case PieceType::Bishop:
+      return "Bishop";
+    case PieceType::Rook:
+      return "Rook";
+    case PieceType::Queen:
+      return "Queen";
+    case PieceType::King:
+      return "King";
   }
   return "Unknown";
 }

@@ -1,18 +1,18 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
+#include <string>
+
 #include "Color.hpp"
 #include "PieceType.hpp"
 
-#include <string>
-
 class Piece {
-private:
+ private:
   Color color_;
   PieceType piece_type_;
   bool has_moved_;
 
-public:
+ public:
   Piece(Color color, PieceType piece_type);
 
   virtual ~Piece() = default;

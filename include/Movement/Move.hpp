@@ -1,15 +1,16 @@
 #ifndef MOVE_HPP
 #define MOVE_HPP
 
-#include "Board/Coordinate.hpp"
 #include <iostream>
 
+#include "Board/Coordinate.hpp"
+
 class Move {
-private:
+ private:
   Coordinate from_;
   Coordinate to_;
 
-public:
+ public:
   Move(Coordinate from, Coordinate to);
 
   const Coordinate &getFrom() const;

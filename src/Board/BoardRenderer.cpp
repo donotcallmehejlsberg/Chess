@@ -1,8 +1,9 @@
 #include "Board/BoardRenderer.hpp"
-#include "Player.hpp"
 
 #include <iostream>
 #include <string>
+
+#include "Player.hpp"
 
 namespace {
 const std::string ANSI_DARK_SQUARE_BACKGROUND = "\033[48;5;94m";
@@ -12,7 +13,7 @@ const std::string ANSI_WHITE_PIECE_FOREGROUND = "\033[1;38;5;255m";
 const std::string ANSI_CHECK_SQUARE_BACKGROUND = "\033[48;5;124m";
 const std::string ANSI_LEGAL_MOVE_SQUARE_BACKGROUND = "\033[48;5;34m";
 const std::string ANSI_RESET = "\033[0m";
-} // namespace
+}  // namespace
 
 void BoardRenderer::printBoard(const Board &board,
                                const Player &current_player) const {
@@ -90,7 +91,6 @@ void BoardRenderer::printSquare(
     const Square &square,
     const std::optional<Coordinate> &checked_king_coordinate,
     const std::vector<Coordinate> &legal_move_coordinates) const {
-
   if (isHighlightedSquare(square, checked_king_coordinate)) {
     std::cout << ANSI_CHECK_SQUARE_BACKGROUND;
     return;
@@ -140,7 +140,6 @@ bool BoardRenderer::isHighlightedSquare(
 bool BoardRenderer::isLegalMoveSquare(
     const Square &square,
     const std::vector<Coordinate> &legal_move_coordinates) const {
-
   for (const Coordinate &coordinate : legal_move_coordinates) {
     if (square.getCoordinate().getRow() == coordinate.getRow() &&
         square.getCoordinate().getColumn() == coordinate.getColumn()) {

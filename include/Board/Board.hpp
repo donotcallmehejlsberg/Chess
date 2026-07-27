@@ -10,14 +10,14 @@
 #include "Pieces/Piece.hpp"
 
 class Board {
-public:
+ public:
   static constexpr std::size_t SIZE = 8;
 
-private:
+ private:
   std::array<std::array<Square, SIZE>, SIZE> squares_;
   Square &getSquare(const Coordinate &coordinate);
 
-public:
+ public:
   Board();
 
   void clear();

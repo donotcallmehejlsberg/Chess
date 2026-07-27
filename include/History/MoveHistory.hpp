@@ -1,21 +1,21 @@
 #ifndef MOVE_HISTORY_HPP
 #define MOVE_HISTORY_HPP
 
-#include "History/MoveRecord.hpp"
-
 #include <optional>
 #include <string>
 #include <vector>
 
+#include "History/MoveRecord.hpp"
+
 class MoveHistory {
-private:
+ private:
   std::vector<MoveRecord> records_;
 
   std::string coordinateToText(const Coordinate &coordinate) const;
   std::string pieceTypeToText(PieceType piece_type) const;
   void printRecord(const MoveRecord &record) const;
 
-public:
+ public:
   void addRecord(const MoveRecord &record);
   void printHistory() const;
   bool isEmpty() const;

@@ -4,11 +4,11 @@
 #include <cstddef>
 
 class Coordinate {
-private:
+ private:
   std::size_t row_;
   std::size_t column_;
 
-public:
+ public:
   Coordinate(std::size_t row, std::size_t column);
 
   std::size_t getRow() const;

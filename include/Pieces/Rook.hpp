@@ -4,7 +4,7 @@
 #include "Pieces/Piece.hpp"
 
 class Rook : public Piece {
-public:
+ public:
   Rook(Color color);
 };
 

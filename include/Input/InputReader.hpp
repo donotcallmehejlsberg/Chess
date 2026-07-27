@@ -1,10 +1,10 @@
 #ifndef INPUT_READER_HPP
 #define INPUT_READER_HPP
 
-#include <string> 
+#include <string>
 
 class InputReader {
-public:
+ public:
   std::string readLine() const;
 };
 

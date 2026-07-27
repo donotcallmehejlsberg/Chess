@@ -4,7 +4,7 @@
 #include "Pieces/Piece.hpp"
 
 class Pawn : public Piece {
-public:
+ public:
   Pawn(Color color);
 };
 

@@ -1,23 +1,23 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
-#include "Color.hpp"
-#include "Pieces/Piece.hpp"
-
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "Color.hpp"
+#include "Pieces/Piece.hpp"
+
 static constexpr int INITIAL_SCORE = 0;
 
 class Player {
-private:
+ private:
   Color color_;
   int score_;
   std::vector<std::unique_ptr<Piece>> pieces_;
   std::vector<PieceType> captured_pieces_;
 
-public:
+ public:
   Player(Color color);
   Player(const Player &other) = delete;
   Player &operator=(const Player &other) = delete;

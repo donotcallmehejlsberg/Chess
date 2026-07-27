@@ -1,4 +1,5 @@
 #include "Movement/MoveValidator.hpp"
+
 #include <cstdlib>
 
 bool MoveValidator::isValidMove(
@@ -28,9 +29,8 @@ bool MoveValidator::isValidMove(
     return false;
   }
 
-  const bool en_passant_move =
-      piece->getPieceType() == PieceType::Pawn &&
-      isEnPassantMove(board, move, color, last_record);
+  const bool en_passant_move = piece->getPieceType() == PieceType::Pawn &&
+                               isEnPassantMove(board, move, color, last_record);
 
   bool valid_piece_move = false;
   if (piece->getPieceType() == PieceType::Pawn) {
@@ -43,9 +43,8 @@ bool MoveValidator::isValidMove(
     return false;
   }
 
-  if (en_passant_move &&
-      wouldLeaveKingInCheckAfterEnPassant(
-          board, move, color, last_record.value())) {
+  if (en_passant_move && wouldLeaveKingInCheckAfterEnPassant(
+                             board, move, color, last_record.value())) {
     return false;
   }
 
@@ -158,7 +157,6 @@ bool MoveValidator::wouldPassThroughCheck(Board board, const Move &move,
 }
 
 bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
-
   std::optional<Coordinate> king_coordinate = findKingCoordinate(board, color);
 
   if (!king_coordinate.has_value()) {
@@ -192,9 +190,8 @@ bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
   return false;
 }
 
-std::vector<Coordinate>
-MoveValidator::getLegalMovesForPiece(const Board &board, const Coordinate &from,
-                                     Color color) const {
+std::vector<Coordinate> MoveValidator::getLegalMovesForPiece(
+    const Board &board, const Coordinate &from, Color color) const {
   std::vector<Coordinate> legal_moves;
   const Piece *piece = board.getPiece(from);
   if (piece == nullptr) {
@@ -218,8 +215,8 @@ MoveValidator::getLegalMovesForPiece(const Board &board, const Coordinate &from,
   return legal_moves;
 }
 
-std::optional<Coordinate>
-MoveValidator::getCheckedKingCoordinate(const Board &board, Color color) const {
+std::optional<Coordinate> MoveValidator::getCheckedKingCoordinate(
+    const Board &board, Color color) const {
   if (!isKingInCheck(board, color)) {
     return std::nullopt;
   }

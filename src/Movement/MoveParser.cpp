@@ -74,8 +74,8 @@ bool MoveParser::hasValidFromCoordinate(const std::string &input) const {
   return true;
 }
 
-std::optional<Coordinate>
-MoveParser::parseCoordinate(const std::string &input) const {
+std::optional<Coordinate> MoveParser::parseCoordinate(
+    const std::string &input) const {
   if (input.length() != 2) {
     return std::nullopt;
   }

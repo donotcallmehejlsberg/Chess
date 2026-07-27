@@ -1,10 +1,10 @@
 #ifndef INPUT_NORMALIZER_HPP
 #define INPUT_NORMALIZER_HPP
 
-#include <string> 
+#include <string>
 
 class InputNormalizer {
-public:
+ public:
   std::string normalize(const std::string &input) const;
 };
 

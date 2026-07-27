@@ -1,4 +1,5 @@
 #include "Input/InputNormalizer.hpp"
+
 #include <cctype>
 
 std::string InputNormalizer::normalize(const std::string &input) const {

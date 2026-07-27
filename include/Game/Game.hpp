@@ -1,6 +1,9 @@
 #ifndef GAME_HPP
 #define GAME_HPP
 
+#include <memory>
+#include <string>
+
 #include "Board/Board.hpp"
 #include "Board/BoardRenderer.hpp"
 #include "Color.hpp"
@@ -14,11 +17,8 @@
 #include "Movement/MoveValidator.hpp"
 #include "Player.hpp"
 
-#include <memory>
-#include <string>
-
 class Game {
-private:
+ private:
   enum class CommandResult { NotCommand, Handled, GameEnded };
   using CommandHandler = CommandResult (Game::*)();
 
@@ -96,7 +96,7 @@ private:
   void printCapturedPieces() const;
   void printStatus() const;
 
-public:
+ public:
   Game();
   void run();
 };

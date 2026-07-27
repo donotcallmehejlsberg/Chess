@@ -1,18 +1,18 @@
 #ifndef SQUARE_HPP
 #define SQUARE_HPP
 
+#include <cstddef>
+
 #include "Board/Coordinate.hpp"
 #include "Color.hpp"
 #include "Pieces/Piece.hpp"
 
-#include <cstddef>
-
 class Square {
-private:
+ private:
   Coordinate coordinate_;
   Piece *piece_;
 
-public:
+ public:
   Square();
   Square(std::size_t row, std::size_t column);
 

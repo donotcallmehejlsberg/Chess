@@ -1,15 +1,15 @@
 #ifndef MOVE_VALIDATOR_HPP
 #define MOVE_VALIDATOR_HPP
 
+#include <optional>
+#include <vector>
+
 #include "Board/Board.hpp"
 #include "History/MoveRecord.hpp"
 #include "Movement/Move.hpp"
 
-#include <optional>
-#include <vector>
-
 class MoveValidator {
-private:
+ private:
   bool isKingInCheck(const Board &board, Color color) const;
   std::optional<Coordinate> findKingCoordinate(const Board &board,
                                                Color color) const;
@@ -56,7 +56,7 @@ private:
 
   bool isPawnDoubleMove(const Board &board, const Move &move, Color color);
 
-public:
+ public:
   bool isValidMove(const Board &board, const Move &move, Color color,
                    const std::optional<MoveRecord> &last_record) const;
 

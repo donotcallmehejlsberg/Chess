@@ -4,8 +4,10 @@
 #include <map>
 
 Game::Game()
-    : white_player_(Color::White), black_player_(Color::Black),
-      current_player_color_(Color::White), result_(GameResult::InProgress) {}
+    : white_player_(Color::White),
+      black_player_(Color::Black),
+      current_player_color_(Color::White),
+      result_(GameResult::InProgress) {}
 
 void Game::run() {
   printWelcomeMessage();
@@ -97,8 +99,8 @@ bool Game::processMoveInput(const std::string &input) {
 
   const Piece *captured_piece = board_.getPiece(valid_move.getTo());
   if (captured_piece == nullptr &&
-      move_validator_.isEnPassantMove(board_, valid_move,
-                                      current_player_color_, last_record)) {
+      move_validator_.isEnPassantMove(board_, valid_move, current_player_color_,
+                                      last_record)) {
     captured_piece = board_.getPiece(last_record.value().getTo());
   }
 
@@ -467,17 +469,17 @@ const Player &Game::getOpponentPlayer() const {
 
 int Game::getPieceValue(PieceType piece_type) const {
   switch (piece_type) {
-  case PieceType::Pawn:
-    return 1;
-  case PieceType::Knight:
-  case PieceType::Bishop:
-    return 3;
-  case PieceType::Rook:
-    return 5;
-  case PieceType::Queen:
-    return 9;
-  case PieceType::King:
-    return 0;
+    case PieceType::Pawn:
+      return 1;
+    case PieceType::Knight:
+    case PieceType::Bishop:
+      return 3;
+    case PieceType::Rook:
+      return 5;
+    case PieceType::Queen:
+      return 9;
+    case PieceType::King:
+      return 0;
   }
   return 0;
 }
