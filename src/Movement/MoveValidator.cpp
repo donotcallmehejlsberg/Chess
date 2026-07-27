@@ -147,7 +147,7 @@ bool MoveValidator::wouldPassThroughCheck(Board board, const Move &move,
     direction = -1;
   }
 
-  int middle_column = static_cast<std::size_t>(
+  const std::size_t middle_column = static_cast<std::size_t>(
       static_cast<int>(king_from.getColumn()) + direction);
 
   Coordinate middle_square(king_from.getRow(), middle_column);
@@ -459,7 +459,9 @@ bool MoveValidator::isPawnDoubleMove(const Board &board, const Move &move,
       static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
 
   if (row_change == direction * 2 && isPawnOnStartingRank(pawn, from)) {
-    Coordinate middle_square(from.getRow() + direction, from.getColumn());
+    const std::size_t middle_row =
+        static_cast<std::size_t>(static_cast<int>(from.getRow()) + direction);
+    Coordinate middle_square(middle_row, from.getColumn());
     return !board.isOccupied(middle_square) && !board.isOccupied(to);
   }
   return false;
@@ -549,7 +551,9 @@ bool MoveValidator::isValidPawnMove(const Board &board, const Move &move,
 
   if (column_change == 0 && row_change == direction * 2 &&
       isPawnOnStartingRank(pawn, from)) {
-    Coordinate middle_square(from.getRow() + direction, from.getColumn());
+    const std::size_t middle_row =
+        static_cast<std::size_t>(static_cast<int>(from.getRow()) + direction);
+    Coordinate middle_square(middle_row, from.getColumn());
     return !board.isOccupied(middle_square) && !board.isOccupied(to);
   }
 
@@ -597,7 +601,8 @@ bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
 
   while (current_row != static_cast<int>(to.getRow()) ||
          current_column != static_cast<int>(to.getColumn())) {
-    Coordinate current_coordinate(current_row, current_column);
+    Coordinate current_coordinate(static_cast<std::size_t>(current_row),
+                                  static_cast<std::size_t>(current_column));
 
     if (board.isOccupied(current_coordinate)) {
       return false;
@@ -624,7 +629,8 @@ bool MoveValidator::isCastlingPathClear(const Board &board,
   int current_column = static_cast<int>(king_from.getColumn()) + direction;
 
   while (current_column != static_cast<int>(rook_from.getColumn())) {
-    Coordinate current_coordinate(current_row, current_column);
+    Coordinate current_coordinate(static_cast<std::size_t>(current_row),
+                                  static_cast<std::size_t>(current_column));
 
     if (board.isOccupied(current_coordinate)) {
       return false;

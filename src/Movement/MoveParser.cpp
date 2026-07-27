@@ -27,11 +27,11 @@ std::optional<Move> MoveParser::parseMove(const std::string &input) const {
   const char &to_file = input[3];
   const char &to_rank = input[4];
 
-  const std::size_t from_column = from_file - 'a';
-  const std::size_t from_row = '8' - from_rank;
+  const std::size_t from_column = static_cast<std::size_t>(from_file - 'a');
+  const std::size_t from_row = static_cast<std::size_t>('8' - from_rank);
 
-  const std::size_t to_column = to_file - 'a';
-  const std::size_t to_row = '8' - to_rank;
+  const std::size_t to_column = static_cast<std::size_t>(to_file - 'a');
+  const std::size_t to_row = static_cast<std::size_t>('8' - to_rank);
 
   Coordinate from(from_row, from_column);
   Coordinate to(to_row, to_column);
@@ -91,8 +91,8 @@ std::optional<Coordinate> MoveParser::parseCoordinate(
     return std::nullopt;
   }
 
-  const std::size_t column = file - 'a';
-  const std::size_t row = '8' - rank;
+  const std::size_t column = static_cast<std::size_t>(file - 'a');
+  const std::size_t row = static_cast<std::size_t>('8' - rank);
 
   return Coordinate(row, column);
 }
