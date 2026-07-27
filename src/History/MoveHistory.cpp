@@ -16,7 +16,7 @@ std::string MoveHistory::coordinateToText(const Coordinate &coordinate) const {
   return text;
 }
 
-std::string MoveHistory::pieceTypeToText(PieceType piece_type) const {
+std::string MoveHistory::pieceTypeToString(PieceType piece_type) const {
   switch (piece_type) {
     case PieceType::Pawn:
       return "Pawn";
@@ -44,14 +44,14 @@ void MoveHistory::printRecord(const MoveRecord &record) const {
   std::cout << coordinateToText(record.getFrom()) << " "
             << coordinateToText(record.getTo());
 
-  if (record.getCapturedPiece().has_value()) {
+  if (record.getCapturedPieceType().has_value()) {
     std::cout << " captured "
-              << pieceTypeToText(record.getCapturedPiece().value());
+              << pieceTypeToString(record.getCapturedPieceType().value());
   }
 
-  if (record.getPromotedTo().has_value()) {
+  if (record.getPromotedPieceType().has_value()) {
     std::cout << " promoted to "
-              << pieceTypeToText(record.getPromotedTo().value());
+              << pieceTypeToString(record.getPromotedPieceType().value());
   }
 }
 

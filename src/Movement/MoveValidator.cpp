@@ -36,7 +36,7 @@ bool MoveValidator::isValidMove(
   if (piece->getPieceType() == PieceType::Pawn) {
     valid_piece_move = isValidPawnMove(board, move, color) || en_passant_move;
   } else {
-    valid_piece_move = isPieceMoveValid(board, move, color);
+    valid_piece_move = isPieceMovementValid(board, move, color);
   }
 
   if (!valid_piece_move) {
@@ -55,8 +55,8 @@ bool MoveValidator::isValidMove(
   return true;
 }
 
-bool MoveValidator::isPieceMoveValid(const Board &board, const Move &move,
-                                     Color color) const {
+bool MoveValidator::isPieceMovementValid(const Board &board, const Move &move,
+                                         Color color) const {
   const Coordinate &from = move.getFrom();
   const Coordinate &to = move.getTo();
 
@@ -157,19 +157,19 @@ bool MoveValidator::wouldPassThroughCheck(Board board, const Move &move,
 }
 
 bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
-  std::optional<Coordinate> king_coordinate = findKingCoordinate(board, color);
+  std::optional<Coordinate> king_position = findKingCoordinate(board, color);
 
-  if (!king_coordinate.has_value()) {
+  if (!king_position.has_value()) {
     return false;
   }
 
-  Coordinate king_coord = king_coordinate.value();
+  const Coordinate &king_coordinate = king_position.value();
   Color enemy_color = color == Color::White ? Color::Black : Color::White;
 
   for (std::size_t row = 0; row < Board::SIZE; row++) {
     for (std::size_t column = 0; column < Board::SIZE; column++) {
-      Coordinate coord(row, column);
-      const Piece *opponent_piece = board.getPiece(coord);
+      Coordinate attacker_coordinate(row, column);
+      const Piece *opponent_piece = board.getPiece(attacker_coordinate);
 
       if (opponent_piece == nullptr) {
         continue;
@@ -179,9 +179,9 @@ bool MoveValidator::isKingInCheck(const Board &board, Color color) const {
         continue;
       }
 
-      Move attack_move(coord, king_coord);
+      Move attack_move(attacker_coordinate, king_coordinate);
 
-      if (isPieceMoveValid(board, attack_move, enemy_color)) {
+      if (isPieceMovementValid(board, attack_move, enemy_color)) {
         return true;
       }
     }
@@ -485,11 +485,11 @@ bool MoveValidator::isEnPassantMove(
   const Coordinate &from = move.getFrom();
   const Coordinate &to = move.getTo();
 
-  const MoveRecord &last = last_record.value();
-  if (!last.wasPawnDoubleMove()) {
+  const MoveRecord &previous_record = last_record.value();
+  if (!previous_record.wasPawnDoubleMove()) {
     return false;
   }
-  if (last.getPlayerColor() == color) {
+  if (previous_record.getPlayerColor() == color) {
     return false;
   }
 
@@ -508,15 +508,15 @@ bool MoveValidator::isEnPassantMove(
     return false;
   }
 
-  if (last.getTo().getRow() != from.getRow()) {
+  if (previous_record.getTo().getRow() != from.getRow()) {
     return false;
   }
 
-  if (last.getTo().getColumn() != to.getColumn()) {
+  if (previous_record.getTo().getColumn() != to.getColumn()) {
     return false;
   }
 
-  const Piece *enemy_pawn = board.getPiece(last.getTo());
+  const Piece *enemy_pawn = board.getPiece(previous_record.getTo());
   if (enemy_pawn == nullptr || enemy_pawn->getPieceType() != PieceType::Pawn ||
       enemy_pawn->getPieceColor() == color) {
     return false;
@@ -597,9 +597,9 @@ bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
 
   while (current_row != static_cast<int>(to.getRow()) ||
          current_column != static_cast<int>(to.getColumn())) {
-    Coordinate current(current_row, current_column);
+    Coordinate current_coordinate(current_row, current_column);
 
-    if (board.isOccupied(current)) {
+    if (board.isOccupied(current_coordinate)) {
       return false;
     }
 
@@ -611,23 +611,22 @@ bool MoveValidator::isPathClear(const Board &board, const Move &move) const {
 }
 
 bool MoveValidator::isCastlingPathClear(const Board &board,
-                                        const Coordinate &king_coord_from,
-                                        const Coordinate &rook_coord) const {
+                                        const Coordinate &king_from,
+                                        const Coordinate &rook_from) const {
   int direction = 0;
 
-  if (king_coord_from.getColumn() > rook_coord.getColumn()) {
+  if (king_from.getColumn() > rook_from.getColumn()) {
     direction = -1;
-  } else if (king_coord_from.getColumn() < rook_coord.getColumn()) {
+  } else if (king_from.getColumn() < rook_from.getColumn()) {
     direction = 1;
   }
-  int current_row = static_cast<int>(king_coord_from.getRow());
-  int current_column =
-      static_cast<int>(king_coord_from.getColumn()) + direction;
+  int current_row = static_cast<int>(king_from.getRow());
+  int current_column = static_cast<int>(king_from.getColumn()) + direction;
 
-  while (current_column != static_cast<int>(rook_coord.getColumn())) {
-    Coordinate current(current_row, current_column);
+  while (current_column != static_cast<int>(rook_from.getColumn())) {
+    Coordinate current_coordinate(current_row, current_column);
 
-    if (board.isOccupied(current)) {
+    if (board.isOccupied(current_coordinate)) {
       return false;
     }
     current_column += direction;
@@ -638,21 +637,21 @@ bool MoveValidator::isCastlingPathClear(const Board &board,
 
 bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
                                         Color color) const {
-  Coordinate king_coord_from = move.getFrom();
-  Coordinate king_coord_to = move.getTo();
+  Coordinate king_from = move.getFrom();
+  Coordinate king_to = move.getTo();
 
-  const Piece *king = board.getPiece(king_coord_from);
+  const Piece *king = board.getPiece(king_from);
   if (king == nullptr || king->getPieceType() != PieceType::King ||
       king->getPieceColor() != color || king->hasMoved()) {
     return false;
   }
 
-  if (king_coord_from.getRow() != king_coord_to.getRow()) {
+  if (king_from.getRow() != king_to.getRow()) {
     return false;
   }
 
-  int column_difference = static_cast<int>(king_coord_to.getColumn()) -
-                          static_cast<int>(king_coord_from.getColumn());
+  int column_difference = static_cast<int>(king_to.getColumn()) -
+                          static_cast<int>(king_from.getColumn());
 
   if (std::abs(column_difference) != 2) {
     return false;
@@ -666,14 +665,14 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
     rook_column = 0;
   }
 
-  Coordinate rook_coord(king_coord_from.getRow(), rook_column);
-  const Piece *rook = board.getPiece(rook_coord);
+  Coordinate rook_from(king_from.getRow(), rook_column);
+  const Piece *rook = board.getPiece(rook_from);
   if (rook == nullptr || rook->getPieceType() != PieceType::Rook ||
       rook->getPieceColor() != color || rook->hasMoved()) {
     return false;
   }
 
-  if (!isCastlingPathClear(board, king_coord_from, rook_coord)) {
+  if (!isCastlingPathClear(board, king_from, rook_from)) {
     return false;
   }
 
@@ -694,23 +693,23 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
 
 bool MoveValidator::isCastlingMove(const Board &board, const Move &move,
                                    Color color) {
-  Coordinate king_coord_from = move.getFrom();
-  Coordinate king_coord_to = move.getTo();
+  Coordinate king_from = move.getFrom();
+  Coordinate king_to = move.getTo();
 
-  const Piece *king = board.getPiece(king_coord_from);
+  const Piece *king = board.getPiece(king_from);
   if (king == nullptr || king->getPieceType() != PieceType::King ||
       king->getPieceColor() != color) {
     return false;
   }
 
-  int column_difference = static_cast<int>(king_coord_to.getColumn()) -
-                          static_cast<int>(king_coord_from.getColumn());
+  int column_difference = static_cast<int>(king_to.getColumn()) -
+                          static_cast<int>(king_from.getColumn());
 
   if (std::abs(column_difference) != 2) {
     return false;
   }
 
-  if (king_coord_to.getRow() != king_coord_from.getRow()) {
+  if (king_to.getRow() != king_from.getRow()) {
     return false;
   }
 

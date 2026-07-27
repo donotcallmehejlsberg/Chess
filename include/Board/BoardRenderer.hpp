@@ -24,7 +24,7 @@ class BoardRenderer {
                    const std::vector<Coordinate> &legal_move_coordinates) const;
   void printPiece(const Square &square) const;
   void printColumnLabels(Color color) const;
-  bool isHighlightedSquare(
+  bool isCheckedKingSquare(
       const Square &square,
       const std::optional<Coordinate> &checked_king_coordinate) const;
 

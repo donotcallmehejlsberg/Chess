@@ -13,8 +13,8 @@ class MoveValidator {
   bool isKingInCheck(const Board &board, Color color) const;
   std::optional<Coordinate> findKingCoordinate(const Board &board,
                                                Color color) const;
-  bool isPieceMoveValid(const Board &board, const Move &move,
-                        Color color) const;
+  bool isPieceMovementValid(const Board &board, const Move &move,
+                            Color color) const;
   bool wouldLeaveKingInCheck(Board board, const Move &move, Color color) const;
   bool wouldLeaveKingInCheckAfterEnPassant(Board board, const Move &move,
                                            Color color,
@@ -48,9 +48,8 @@ class MoveValidator {
 
   bool isValidCastlingMove(const Board &board, const Move &move,
                            Color color) const;
-  bool isCastlingPathClear(const Board &board,
-                           const Coordinate &king_coord_from,
-                           const Coordinate &rook_coord) const;
+  bool isCastlingPathClear(const Board &board, const Coordinate &king_from,
+                           const Coordinate &rook_from) const;
 
   bool wouldPassThroughCheck(Board board, const Move &move, Color color) const;
 

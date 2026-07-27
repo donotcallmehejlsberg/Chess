@@ -91,7 +91,7 @@ void BoardRenderer::printSquare(
     const Square &square,
     const std::optional<Coordinate> &checked_king_coordinate,
     const std::vector<Coordinate> &legal_move_coordinates) const {
-  if (isHighlightedSquare(square, checked_king_coordinate)) {
+  if (isCheckedKingSquare(square, checked_king_coordinate)) {
     std::cout << ANSI_CHECK_SQUARE_BACKGROUND;
     return;
   }
@@ -124,7 +124,7 @@ void BoardRenderer::printPiece(const Square &square) const {
   std::cout << " " << piece->getSymbol() << "  " << ANSI_RESET;
 }
 
-bool BoardRenderer::isHighlightedSquare(
+bool BoardRenderer::isCheckedKingSquare(
     const Square &square,
     const std::optional<Coordinate> &checked_king_coordinate) const {
   if (!checked_king_coordinate.has_value()) {

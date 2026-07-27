@@ -12,22 +12,22 @@ class MoveRecord {
   Color player_color_;
   Coordinate from_;
   Coordinate to_;
-  PieceType moved_piece_;
-  std::optional<PieceType> captured_piece_;
-  std::optional<PieceType> promoted_to_;
+  PieceType moved_piece_type_;
+  std::optional<PieceType> captured_piece_type_;
+  std::optional<PieceType> promoted_piece_type_;
 
  public:
   MoveRecord(Color player_color, const Coordinate &from, const Coordinate &to,
-             PieceType moved_piece,
-             std::optional<PieceType> captured_piece = std::nullopt,
-             std::optional<PieceType> promoted_to = std::nullopt);
+             PieceType moved_piece_type,
+             std::optional<PieceType> captured_piece_type = std::nullopt,
+             std::optional<PieceType> promoted_piece_type = std::nullopt);
 
   Color getPlayerColor() const;
   const Coordinate &getFrom() const;
   const Coordinate &getTo() const;
-  PieceType getMovedPiece() const;
-  std::optional<PieceType> getCapturedPiece() const;
-  std::optional<PieceType> getPromotedTo() const;
+  PieceType getMovedPieceType() const;
+  std::optional<PieceType> getCapturedPieceType() const;
+  std::optional<PieceType> getPromotedPieceType() const;
 
   bool wasPawnDoubleMove() const;
 };

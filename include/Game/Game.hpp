@@ -73,7 +73,7 @@ class Game {
 
   // Finds players and updates whose turn or result it is.
   void switchPlayer();
-  void setWinnerByOpponent();
+  void setOpponentAsWinner();
   Player &getPlayerByColor(Color color);
   const Player &getCurrentPlayer() const;
   const Player &getOpponentPlayer() const;

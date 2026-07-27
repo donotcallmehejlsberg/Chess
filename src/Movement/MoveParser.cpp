@@ -1,6 +1,6 @@
 #include "Movement/MoveParser.hpp"
 
-std::optional<Move> MoveParser::handleMove(const std::string &input) const {
+std::optional<Move> MoveParser::parseMove(const std::string &input) const {
   if (isEmpty(input)) {
     return std::nullopt;
   }
