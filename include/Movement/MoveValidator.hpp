@@ -9,62 +9,19 @@
 #include "Movement/Move.hpp"
 
 class MoveValidator {
- private:
-  bool isKingInCheck(const Board &board, Color color) const;
-  std::optional<Coordinate> findKingCoordinate(const Board &board,
-                                               Color color) const;
-  bool isPieceMovementValid(const Board &board, const Move &move,
-                            Color color) const;
-  bool wouldLeaveKingInCheck(Board board, const Move &move, Color color) const;
-  bool wouldLeaveKingInCheckAfterEnPassant(Board board, const Move &move,
-                                           Color color,
-                                           const MoveRecord &last_record) const;
-
-  bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
-  bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
-
-  bool isValidKingMove(const Board &board, const Move &move, Color color) const;
-
-  bool isValidKnightMove(const Board &board, const Move &move,
-                         Color color) const;
-
-  bool isValidRookMove(const Board &board, const Move &move, Color color) const;
-
-  bool isValidBishopMove(const Board &board, const Move &move,
-                         Color color) const;
-
-  bool isValidQueenMove(const Board &board, const Move &move,
-                        Color color) const;
-
-  bool isPathClear(const Board &board, const Move &move) const;
-
-  bool isOccupiedByOwnPiece(const Board &board, const Coordinate &to,
-                            Color color) const;
-  bool isOccupiedByEnemyPiece(const Board &board, const Coordinate &to,
-                              Color color) const;
-
-  bool isMovingOwnPiece(const Piece *piece, Color color) const;
-  bool isSameSquare(const Move &move) const;
-
-  bool isValidCastlingMove(const Board &board, const Move &move,
-                           Color color) const;
-  bool isCastlingPathClear(const Board &board, const Coordinate &king_from,
-                           const Coordinate &rook_from) const;
-
-  bool wouldPassThroughCheck(Board board, const Move &move, Color color) const;
-
-  bool isPawnDoubleMove(const Board &board, const Move &move, Color color);
-
  public:
+  // Validates a complete move against piece rules and king safety.
   bool isValidMove(const Board &board, const Move &move, Color color,
                    const std::optional<MoveRecord> &last_record) const;
 
+  // Exposes special-move recognition needed when executing a valid move.
   bool isEnPassantMove(const Board &board, const Move &move, Color color,
                        const std::optional<MoveRecord> &last_record) const;
+  bool isCastlingMove(const Board &board, const Move &move, Color color);
 
+  // Queries legal moves and the current check or end-state conditions.
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
                                                      Color color) const;
-
   std::vector<Coordinate> getLegalMovesForPiece(const Board &board,
                                                 const Coordinate &from,
                                                 Color color) const;
@@ -72,7 +29,49 @@ class MoveValidator {
   bool hasAnyLegalMove(const Board &board, Color color) const;
   bool isCheckmate(const Board &board, Color color) const;
   bool isStalemate(const Board &board, Color color) const;
-  bool isCastlingMove(const Board &board, const Move &move, Color color);
+
+ private:
+  // Checks shared move conditions and dispatches piece-specific rules.
+  bool isPieceMovementValid(const Board &board, const Move &move,
+                            Color color) const;
+  bool isSameSquare(const Move &move) const;
+  bool isMovingOwnPiece(const Piece *piece, Color color) const;
+  bool isOccupiedByOwnPiece(const Board &board, const Coordinate &to,
+                            Color color) const;
+  bool isOccupiedByEnemyPiece(const Board &board, const Coordinate &to,
+                              Color color) const;
+
+  // Validates movement geometry for each standard chess piece.
+  bool isValidPawnMove(const Board &board, const Move &move, Color color) const;
+  bool isPawnOnStartingRank(const Piece *pawn, const Coordinate &from) const;
+  bool isValidKnightMove(const Board &board, const Move &move,
+                         Color color) const;
+  bool isValidBishopMove(const Board &board, const Move &move,
+                         Color color) const;
+  bool isValidRookMove(const Board &board, const Move &move, Color color) const;
+  bool isValidQueenMove(const Board &board, const Move &move,
+                        Color color) const;
+  bool isValidKingMove(const Board &board, const Move &move, Color color) const;
+  bool isPathClear(const Board &board, const Move &move) const;
+
+  // Finds the king and rejects moves that leave it on an attacked square.
+  std::optional<Coordinate> findKingCoordinate(const Board &board,
+                                               Color color) const;
+  bool isKingInCheck(const Board &board, Color color) const;
+  bool wouldLeaveKingInCheck(Board board, const Move &move, Color color) const;
+  bool wouldLeaveKingInCheckAfterEnPassant(Board board, const Move &move,
+                                           Color color,
+                                           const MoveRecord &last_record) const;
+  bool wouldPassThroughCheck(Board board, const Move &move, Color color) const;
+
+  // Validates castling-specific geometry, path, and attack restrictions.
+  bool isValidCastlingMove(const Board &board, const Move &move,
+                           Color color) const;
+  bool isCastlingPathClear(const Board &board, const Coordinate &king_from,
+                           const Coordinate &rook_from) const;
+
+  // Recognizes a legal initial two-square pawn advance.
+  bool isPawnDoubleMove(const Board &board, const Move &move, Color color);
 };
 
 #endif

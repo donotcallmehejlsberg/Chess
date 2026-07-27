@@ -18,6 +18,10 @@
 #include "Player.hpp"
 
 class Game {
+ public:
+  Game();
+  void run();
+
  private:
   enum class CommandResult { NotCommand, Handled, GameEnded };
   using CommandHandler = CommandResult (Game::*)();
@@ -42,7 +46,6 @@ class Game {
   bool handleMainMenu();
   void setupGame();
   void handleTurn();
-  bool processMoveInput(const std::string &input);
   bool isGameOver() const;
 
   // Handles text commands entered by the player.
@@ -60,6 +63,7 @@ class Game {
   CommandResult handleHistory();
 
   // Executes a validated move and updates the game afterwards.
+  bool processMoveInput(const std::string &input);
   void executeMove(const Move &move);
   void finishTurnAfterMove();
   void handleCapture(const Move &move);
@@ -72,11 +76,11 @@ class Game {
   bool canPromote(const Piece *piece, const Coordinate &coordinate) const;
 
   // Finds players and updates whose turn or result it is.
-  void switchPlayer();
-  void setOpponentAsWinner();
   Player &getPlayerByColor(Color color);
   const Player &getCurrentPlayer() const;
   const Player &getOpponentPlayer() const;
+  void switchPlayer();
+  void setOpponentAsWinner();
 
   // Calculates score values for captured pieces.
   int getPieceValue(PieceType piece_type) const;
@@ -95,10 +99,6 @@ class Game {
   void printRules() const;
   void printCapturedPieces() const;
   void printStatus() const;
-
- public:
-  Game();
-  void run();
 };
 
 #endif
