@@ -71,6 +71,7 @@ enable_testing()
 
 add_executable(chess_tests
   tests/MoveParserTests.cpp
+  tests/MoveRecordTests.cpp
 )
 
 target_link_libraries(chess_tests PRIVATE
