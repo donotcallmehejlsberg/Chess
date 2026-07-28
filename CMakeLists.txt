@@ -75,6 +75,7 @@ add_executable(chess_tests
   tests/MoveHistoryTests.cpp
   tests/BoardTests.cpp
   tests/MoveValidatorTests.cpp
+  tests/GameStateTests.cpp
 )
 
 target_link_libraries(chess_tests PRIVATE
