@@ -577,3 +577,666 @@ TEST(MoveValidatorTest, AcceptsMoveThatBlocksCheck) {
 
   EXPECT_TRUE(is_valid);
 }
+
+TEST(PawnMoveValidatorTest, AcceptsWhitePawnSingleStep) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  const Coordinate pawn_from(4, 0);
+  const Coordinate pawn_to(3, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, AcceptsBlackPawnSingleStep) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn black_pawn(Color::Black);
+  const Coordinate pawn_from(3, 0);
+  const Coordinate pawn_to(4, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &black_pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, AcceptsWhitePawnDoubleStepFromStartingRank) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(4, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, AcceptsBlackPawnDoubleStepFromStartingRank) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn black_pawn(Color::Black);
+  const Coordinate pawn_from(1, 0);
+  const Coordinate pawn_to(3, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &black_pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, RejectsPawnDoubleStepOutsideStartingRank) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn pawn(Color::White);
+  const Coordinate pawn_from(5, 0);
+  const Coordinate pawn_to(3, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, RejectsPawnMoveWhenDestinationIsBlocked) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Rook black_rook(Color::Black);
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(4, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+  board.setPiece(pawn_to, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, RejectsPawnDoubleStepWhenMiddleSquareIsBlocked) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Rook black_rook(Color::Black);
+
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(4, 0);
+  const Coordinate blocked_middle(5, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+  board.setPiece(blocked_middle, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, AllowsPawnToCaptureEnemyPieceDiagonally) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Rook black_rook(Color::Black);
+
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(5, 1);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+  board.setPiece(pawn_to, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, RejectsPawnDiagonalMoveToEmptySquare) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(5, 1);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(PawnMoveValidatorTest, RejectsPawnForwardCapture) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Rook black_rook(Color::Black);
+
+  const Coordinate pawn_from(6, 0);
+  const Coordinate pawn_to(5, 0);
+
+  const Move move(pawn_from, pawn_to);
+
+  board.setPiece(pawn_from, &white_pawn);
+  board.setPiece(pawn_to, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, AllowsWhiteKingsideCastling) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 6);
+  const Coordinate rook_coordinate(7, 7);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(rook_coordinate, &white_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(CastlingTest, AllowsWhiteQueensideCastling) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 2);
+  const Coordinate rook_coordinate(7, 0);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(rook_coordinate, &white_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(CastlingTest, AllowsBlackKingsideCastling) {
+  Board board;
+  MoveValidator move_validator;
+
+  King black_king(Color::Black);
+  Rook black_rook(Color::Black);
+
+  const Coordinate king_from(0, 4);
+  const Coordinate king_to(0, 6);
+  const Coordinate rook_coordinate(0, 7);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &black_king);
+  board.setPiece(rook_coordinate, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(CastlingTest, AllowsBlackQueensideCastling) {
+  Board board;
+  MoveValidator move_validator;
+
+  King black_king(Color::Black);
+  Rook black_rook(Color::Black);
+
+  const Coordinate king_from(0, 4);
+  const Coordinate king_to(0, 2);
+  const Coordinate rook_coordinate(0, 0);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &black_king);
+  board.setPiece(rook_coordinate, &black_rook);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingWhenPathIsBlocked) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+  Bishop blocking_bishop(Color::White);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 6);
+  const Coordinate rook_coordinate(7, 7);
+  const Coordinate blocked_square(7, 5);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(rook_coordinate, &white_rook);
+  board.setPiece(blocked_square, &blocking_bishop);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingAfterKingHasMoved) {
+  Board board;
+  MoveValidator move_validator;
+
+  King black_king(Color::Black);
+  Rook black_rook(Color::Black);
+
+  const Coordinate king_from(0, 4);
+  const Coordinate king_to(0, 2);
+  const Coordinate rook_coordinate(0, 0);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &black_king);
+  board.setPiece(rook_coordinate, &black_rook);
+
+  black_king.markMoved();
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingAfterRookHasMoved) {
+  Board board;
+  MoveValidator move_validator;
+
+  King black_king(Color::Black);
+  Rook black_rook(Color::Black);
+
+  const Coordinate king_from(0, 4);
+  const Coordinate king_to(0, 2);
+  const Coordinate rook_coordinate(0, 0);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &black_king);
+  board.setPiece(rook_coordinate, &black_rook);
+
+  black_rook.markMoved();
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingWithoutRook) {
+  Board board;
+  MoveValidator move_validator;
+
+  King black_king(Color::Black);
+
+  const Coordinate king_from(0, 4);
+  const Coordinate king_to(0, 2);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &black_king);
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::Black, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingWhileKingIsInCheck) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+  Queen black_queen(Color::Black);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 2);
+  const Coordinate rook_coordinate(7, 0);
+  const Coordinate queen_coordinate(0, 4);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(rook_coordinate, &white_rook);
+  board.setPiece(queen_coordinate, &black_queen);
+
+  ASSERT_TRUE(
+      move_validator.getCheckedKingCoordinate(board, Color::White).has_value());
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingThroughAttackedSquare) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+  Queen black_queen(Color::Black);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 2);
+  const Coordinate rook_coordinate(7, 0);
+  const Coordinate queen_coordinate(0, 3);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(rook_coordinate, &white_rook);
+  board.setPiece(queen_coordinate, &black_queen);
+
+  ASSERT_FALSE(
+      move_validator.getCheckedKingCoordinate(board, Color::White).has_value());
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(CastlingTest, RejectsCastlingIntoCheck) {
+  Board board;
+  MoveValidator move_validator;
+
+  King white_king(Color::White);
+  Rook white_rook(Color::White);
+  Queen black_queen(Color::Black);
+
+  const Coordinate king_from(7, 4);
+  const Coordinate king_to(7, 2);
+  const Coordinate white_rook_coordinate(7, 0);
+  const Coordinate black_queen_coordinate(0, 2);
+  const Move move(king_from, king_to);
+
+  board.setPiece(king_from, &white_king);
+  board.setPiece(white_rook_coordinate, &white_rook);
+  board.setPiece(black_queen_coordinate, &black_queen);
+
+  ASSERT_FALSE(
+      move_validator.getCheckedKingCoordinate(board, Color::White).has_value());
+
+  const bool is_valid =
+      move_validator.isValidMove(board, move, Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, AllowsWhiteEnPassantCapture) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn black_pawn(Color::Black);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+
+  const Coordinate black_pawn_from(1, 3);
+  const Coordinate black_pawn_to(3, 3);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_pawn_to, &black_pawn);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+  const MoveRecord last_record(Color::Black, black_pawn_from, black_pawn_to,
+                               PieceType::Pawn);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(EnPassantTest, AllowsBlackEnPassantCapture) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn black_pawn(Color::Black);
+  Pawn white_pawn(Color::White);
+
+  const Coordinate black_pawn_from(4, 2);
+  const Coordinate black_pawn_to(5, 3);
+
+  const Coordinate white_pawn_from(6, 3);
+  const Coordinate white_pawn_to(4, 3);
+
+  board.setPiece(black_pawn_from, &black_pawn);
+  board.setPiece(white_pawn_to, &white_pawn);
+
+  const Move en_passant_move(black_pawn_from, black_pawn_to);
+
+  const MoveRecord last_record(Color::White, white_pawn_from, white_pawn_to,
+                               PieceType::Pawn);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::Black, last_record);
+
+  EXPECT_TRUE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantWithoutPreviousMove) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn black_pawn(Color::Black);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+  const Coordinate black_pawn_coordinate(3, 3);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_pawn_coordinate, &black_pawn);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, std::nullopt);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantWhenPreviousPieceWasNotPawn) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Rook black_rook(Color::Black);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+
+  const Coordinate black_rook_from(1, 3);
+  const Coordinate black_rook_to(3, 3);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_rook_to, &black_rook);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+
+  const MoveRecord last_record(Color::Black, black_rook_from, black_rook_to,
+                               PieceType::Rook);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantAfterSinglePawnStep) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn black_pawn(Color::Black);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+
+  const Coordinate black_pawn_from(2, 3);
+  const Coordinate black_pawn_to(3, 3);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_pawn_to, &black_pawn);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+  const MoveRecord last_record(Color::Black, black_pawn_from, black_pawn_to,
+                               PieceType::Pawn);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantWhenEnemyPawnIsNotAdjacent) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn black_pawn(Color::Black);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+
+  const Coordinate black_pawn_from(1, 4);
+  const Coordinate black_pawn_to(3, 4);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_pawn_to, &black_pawn);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+  const MoveRecord last_record(Color::Black, black_pawn_from, black_pawn_to,
+                               PieceType::Pawn);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantAfterOwnPawnDoubleMove) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn other_white_pawn(Color::White);
+
+  const Coordinate white_pawn_from(4, 2);
+  const Coordinate white_pawn_to(3, 3);
+
+  const Coordinate other_pawn_from(6, 3);
+  const Coordinate other_pawn_to(4, 3);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(other_pawn_to, &other_white_pawn);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+  const MoveRecord last_record(Color::White, other_pawn_from, other_pawn_to,
+                               PieceType::Pawn);
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_FALSE(is_valid);
+}
+
+TEST(EnPassantTest, RejectsEnPassantWhenItLeavesKingInCheck) {
+  Board board;
+  MoveValidator move_validator;
+
+  Pawn white_pawn(Color::White);
+  Pawn black_pawn(Color::Black);
+  Queen black_queen(Color::Black);
+  King white_king(Color::White);
+
+  const Coordinate white_king_coordinate(3, 0);
+
+  const Coordinate white_pawn_from(3, 2);
+  const Coordinate white_pawn_to(2, 3);
+
+  const Coordinate black_pawn_from(1, 3);
+  const Coordinate black_pawn_to(3, 3);
+
+  const Coordinate black_queen_coordinate(3, 7);
+
+  board.setPiece(white_pawn_from, &white_pawn);
+  board.setPiece(black_pawn_to, &black_pawn);
+  board.setPiece(black_queen_coordinate, &black_queen);
+  board.setPiece(white_king_coordinate, &white_king);
+
+  const Move en_passant_move(white_pawn_from, white_pawn_to);
+  const MoveRecord last_record(Color::Black, black_pawn_from, black_pawn_to,
+                               PieceType::Pawn);
+
+  ASSERT_FALSE(
+      move_validator.getCheckedKingCoordinate(board, Color::White).has_value());
+
+  const bool is_valid = move_validator.isValidMove(board, en_passant_move,
+                                                   Color::White, last_record);
+
+  EXPECT_FALSE(is_valid);
+}
