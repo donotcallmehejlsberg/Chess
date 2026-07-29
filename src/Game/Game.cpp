@@ -99,6 +99,9 @@ bool Game::processMoveInput(const std::string &input) {
     return handleInvalidMove();
   }
 
+  const Color moving_player_color = current_player_color_;
+  const PieceType moving_piece_type = moving_piece->getPieceType();
+
   const Piece *captured_piece = board_.getPiece(valid_move.getTo());
   if (captured_piece == nullptr &&
       move_validator_.isEnPassantMove(board_, valid_move, current_player_color_,
@@ -111,11 +114,12 @@ bool Game::processMoveInput(const std::string &input) {
     captured_piece_type = captured_piece->getPieceType();
   }
 
-  MoveRecord record(current_player_color_, valid_move.getFrom(),
-                    valid_move.getTo(), moving_piece->getPieceType(),
-                    captured_piece_type);
+  const std::optional<PieceType> promoted_piece_type = executeMove(valid_move);
 
-  executeMove(valid_move);
+  MoveRecord record(moving_player_color, valid_move.getFrom(),
+                    valid_move.getTo(), moving_piece_type, captured_piece_type,
+                    promoted_piece_type);
+
   move_history_.addRecord(record);
   finishTurnAfterMove();
 
@@ -273,16 +277,21 @@ Game::CommandResult Game::handleHistory() {
   return CommandResult::Handled;
 }
 
-void Game::executeMove(const Move &move) {
+std::optional<PieceType> Game::executeMove(const Move &move) {
+  std::optional<PieceType> promoted_piece_type = std::nullopt;
+
   if (move_validator_.isCastlingMove(board_, move, current_player_color_)) {
     executeCastling(move);
   } else {
     handleCapture(move);
     handleEnPassantCapture(move);
     board_.movePiece(move);
-    handlePromotion(move);
+
+    promoted_piece_type = handlePromotion(move);
   }
+
   switchPlayer();
+  return promoted_piece_type;
 }
 
 void Game::executeCastling(const Move &move) {
@@ -382,11 +391,11 @@ void Game::handleEnPassantCapture(const Move &move) {
   board_.removePiece(captured_coordinate);
 }
 
-void Game::handlePromotion(const Move &move) {
+std::optional<PieceType> Game::handlePromotion(const Move &move) {
   Coordinate to = move.getTo();
   const Piece *piece = board_.getPiece(to);
   if (!canPromote(piece, to)) {
-    return;
+    return std::nullopt;
   }
 
   Player &player = getPlayerByColor(piece->getPieceColor());
@@ -403,7 +412,9 @@ void Game::handlePromotion(const Move &move) {
     std::cout << player.getColorName()
               << " pawn reached the last rank and was promoted to "
               << promoted_piece_name << "!" << std::endl;
+    return promoted_piece->getPieceType();
   }
+  return std::nullopt;
 }
 
 std::unique_ptr<Piece> Game::createPromotionPiece(Color color) {

@@ -64,14 +64,14 @@ class Game {
 
   // Executes a validated move and updates the game afterwards.
   bool processMoveInput(const std::string &input);
-  void executeMove(const Move &move);
+  std::optional<PieceType> executeMove(const Move &move);
   void finishTurnAfterMove();
   void handleCapture(const Move &move);
   void executeCastling(const Move &move);
   void handleEnPassantCapture(const Move &move);
 
   // Handles pawn promotion when a pawn reaches the last rank.
-  void handlePromotion(const Move &move);
+  std::optional<PieceType> handlePromotion(const Move &move);
   std::unique_ptr<Piece> createPromotionPiece(Color color);
   bool canPromote(const Piece *piece, const Coordinate &coordinate) const;
 
