@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Color.hpp"
+#include "PieceType.hpp"
 #include "Pieces/Piece.hpp"
 
 static constexpr int INITIAL_SCORE = 0;
@@ -31,7 +32,6 @@ class Player {
 
   Piece *promotePiece(const Piece *old_piece, std::unique_ptr<Piece> new_piece);
 
-  std::string pieceTypeToString(PieceType piece_type) const;
   void printCapturedPieces() const;
 
   std::string getColorName() const;

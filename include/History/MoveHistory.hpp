@@ -12,7 +12,6 @@ class MoveHistory {
   std::vector<MoveRecord> records_;
 
   std::string coordinateToText(const Coordinate &coordinate) const;
-  std::string pieceTypeToString(PieceType piece_type) const;
   void printRecord(const MoveRecord &record) const;
 
  public:

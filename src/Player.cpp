@@ -43,24 +43,6 @@ Piece *Player::promotePiece(const Piece *old_piece,
   return nullptr;
 }
 
-std::string Player::pieceTypeToString(PieceType piece_type) const {
-  switch (piece_type) {
-    case PieceType::Pawn:
-      return "Pawn";
-    case PieceType::Knight:
-      return "Knight";
-    case PieceType::Bishop:
-      return "Bishop";
-    case PieceType::Rook:
-      return "Rook";
-    case PieceType::Queen:
-      return "Queen";
-    case PieceType::King:
-      return "King";
-  }
-  return "Unknown";
-}
-
 void Player::printCapturedPieces() const {
   if (captured_pieces_.empty()) {
     std::cout << "-";

@@ -3,6 +3,8 @@
 #include <iostream>
 #include <map>
 
+#include "PieceType.hpp"
+
 Game::Game()
     : white_player_(Color::White),
       black_player_(Color::Black),
@@ -348,12 +350,10 @@ void Game::handleCapture(const Move &move) {
   const int piece_value = target_piece->getValue();
   if (current_player_color_ == Color::White) {
     white_player_.addCapturedPiece(piece_type);
-    white_player_.setScore(white_player_.getScore() +
-                           piece_value);
+    white_player_.setScore(white_player_.getScore() + piece_value);
   } else {
     black_player_.addCapturedPiece(piece_type);
-    black_player_.setScore(black_player_.getScore() +
-                           piece_value);
+    black_player_.setScore(black_player_.getScore() + piece_value);
   }
 
   board_.removePiece(move.getTo());
@@ -394,7 +394,7 @@ void Game::handlePromotion(const Move &move) {
       createPromotionPiece(piece->getPieceColor());
 
   const std::string promoted_piece_name =
-      player.pieceTypeToString(new_piece->getPieceType());
+      pieceTypeToString(new_piece->getPieceType());
 
   Piece *promoted_piece = player.promotePiece(piece, std::move(new_piece));
 
