@@ -82,9 +82,6 @@ class Game {
   void switchPlayer();
   void setOpponentAsWinner();
 
-  // Calculates score values for captured pieces.
-  int getPieceValue(PieceType piece_type) const;
-
   // Prints standard error messages for bad input or invalid moves.
   bool handleInvalidInput() const;
   bool handleInvalidMove() const;

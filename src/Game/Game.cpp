@@ -345,14 +345,15 @@ void Game::handleCapture(const Move &move) {
   }
 
   const PieceType piece_type = target_piece->getPieceType();
+  const int piece_value = target_piece->getValue();
   if (current_player_color_ == Color::White) {
     white_player_.addCapturedPiece(piece_type);
     white_player_.setScore(white_player_.getScore() +
-                           getPieceValue(piece_type));
+                           piece_value);
   } else {
     black_player_.addCapturedPiece(piece_type);
     black_player_.setScore(black_player_.getScore() +
-                           getPieceValue(piece_type));
+                           piece_value);
   }
 
   board_.removePiece(move.getTo());
@@ -372,9 +373,11 @@ void Game::handleEnPassantCapture(const Move &move) {
   }
 
   const PieceType piece_type = captured_piece->getPieceType();
+  const int piece_value = captured_piece->getValue();
+
   Player &player = getPlayerByColor(current_player_color_);
   player.addCapturedPiece(piece_type);
-  player.setScore(player.getScore() + getPieceValue(piece_type));
+  player.setScore(player.getScore() + piece_value);
 
   board_.removePiece(captured_coordinate);
 }
@@ -465,23 +468,6 @@ const Player &Game::getCurrentPlayer() const {
 
 const Player &Game::getOpponentPlayer() const {
   return current_player_color_ == Color::White ? black_player_ : white_player_;
-}
-
-int Game::getPieceValue(PieceType piece_type) const {
-  switch (piece_type) {
-    case PieceType::Pawn:
-      return 1;
-    case PieceType::Knight:
-    case PieceType::Bishop:
-      return 3;
-    case PieceType::Rook:
-      return 5;
-    case PieceType::Queen:
-      return 9;
-    case PieceType::King:
-      return 0;
-  }
-  return 0;
 }
 
 bool Game::handleInvalidInput() const {
