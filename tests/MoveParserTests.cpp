@@ -6,18 +6,18 @@ TEST(MoveParserTest, ValidLength) {
   MoveParser move_parser;
   const std::string input = "e2 e4";
 
-  const bool is_valid = move_parser.hasValidLength(input);
+  const std::optional<Move> result = move_parser.parseMove(input);
 
-  EXPECT_TRUE(is_valid);
+  EXPECT_TRUE(result.has_value());
 }
 
 TEST(MoveParserTest, InvalidLength) {
   MoveParser move_parser;
   const std::string input = "e2 e44";
 
-  const bool is_valid = move_parser.hasValidLength(input);
+  const std::optional<Move> result = move_parser.parseMove(input);
 
-  EXPECT_FALSE(is_valid);
+  EXPECT_FALSE(result.has_value());
 }
 
 TEST(MoveParserTest, ProducesCorrectCoordinates) {
@@ -66,18 +66,18 @@ TEST(MoveParserTest, DetectsInvalidFromCoordinate) {
   MoveParser move_parser;
   const std::string input = "i2 e4";
 
-  const bool is_valid_from_coordinate = move_parser.hasValidFromCoordinate(input);
+  const std::optional<Move> result = move_parser.parseMove(input);
 
-  EXPECT_FALSE(is_valid_from_coordinate);
+  EXPECT_FALSE(result.has_value());
 }
 
 TEST(MoveParserTest, DetectsInvalidToCoordinate) {
   MoveParser move_parser;
   const std::string input = "e2 i4";
 
-  const bool is_valid_to_coordinate = move_parser.hasValidToCoordinate(input);
+  const std::optional<Move> result = move_parser.parseMove(input);
 
-  EXPECT_FALSE(is_valid_to_coordinate);
+  EXPECT_FALSE(result.has_value());
 }
 
 TEST(MoveParserTest, ParsesBoundaryCoordinates) {
