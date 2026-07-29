@@ -17,7 +17,7 @@ class MoveValidator {
   // Exposes special-move recognition needed when executing a valid move.
   bool isEnPassantMove(const Board &board, const Move &move, Color color,
                        const std::optional<MoveRecord> &last_record) const;
-  bool isCastlingMove(const Board &board, const Move &move, Color color);
+  bool isCastlingMove(const Board &board, const Move &move, Color color) const;
 
   // Queries legal moves and the current check or end-state conditions.
   std::optional<Coordinate> getCheckedKingCoordinate(const Board &board,
@@ -31,6 +31,8 @@ class MoveValidator {
   bool isStalemate(const Board &board, Color color) const;
 
  private:
+  bool passesBasicMoveChecks(const Board &board, const Move &move, Color color,
+                             const Piece *piece) const;
   // Checks shared move conditions and dispatches piece-specific rules.
   bool isPieceMovementValid(const Board &board, const Move &move,
                             Color color) const;
@@ -69,9 +71,6 @@ class MoveValidator {
                            Color color) const;
   bool isCastlingPathClear(const Board &board, const Coordinate &king_from,
                            const Coordinate &rook_from) const;
-
-  // Recognizes a legal initial two-square pawn advance.
-  bool isPawnDoubleMove(const Board &board, const Move &move, Color color);
 };
 
 #endif

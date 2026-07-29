@@ -6,26 +6,9 @@ bool MoveValidator::isValidMove(
     const Board &board, const Move &move, Color color,
     const std::optional<MoveRecord> &last_record) const {
   const Coordinate &from = move.getFrom();
-  const Coordinate &to = move.getTo();
-
-  if (!board.isValidCoordinate(from) || !board.isValidCoordinate(to)) {
-    return false;
-  }
-
-  if (isSameSquare(move)) {
-    return false;
-  }
-
   const Piece *piece = board.getPiece(from);
-  if (piece == nullptr) {
-    return false;
-  }
 
-  if (!isMovingOwnPiece(piece, color)) {
-    return false;
-  }
-
-  if (isOccupiedByOwnPiece(board, to, color)) {
+  if (!passesBasicMoveChecks(board, move, color, piece)) {
     return false;
   }
 
@@ -57,6 +40,39 @@ bool MoveValidator::isValidMove(
 
 bool MoveValidator::isPieceMovementValid(const Board &board, const Move &move,
                                          Color color) const {
+  const Piece *piece = board.getPiece(move.getFrom());
+
+  if (!passesBasicMoveChecks(board, move, color, piece)) {
+    return false;
+  }
+
+  switch (piece->getPieceType()) {
+    case PieceType::Pawn:
+      return isValidPawnMove(board, move, color);
+
+    case PieceType::Knight:
+      return isValidKnightMove(board, move, color);
+
+    case PieceType::Rook:
+      return isValidRookMove(board, move, color);
+
+    case PieceType::Bishop:
+      return isValidBishopMove(board, move, color);
+
+    case PieceType::Queen:
+      return isValidQueenMove(board, move, color);
+
+    case PieceType::King:
+      return isValidKingMove(board, move, color) ||
+             isValidCastlingMove(board, move, color);
+  }
+
+  return false;
+}
+
+bool MoveValidator::passesBasicMoveChecks(const Board &board, const Move &move,
+                                          Color color,
+                                          const Piece *piece) const {
   const Coordinate &from = move.getFrom();
   const Coordinate &to = move.getTo();
 
@@ -68,7 +84,6 @@ bool MoveValidator::isPieceMovementValid(const Board &board, const Move &move,
     return false;
   }
 
-  const Piece *piece = board.getPiece(from);
   if (piece == nullptr) {
     return false;
   }
@@ -81,32 +96,7 @@ bool MoveValidator::isPieceMovementValid(const Board &board, const Move &move,
     return false;
   }
 
-  if (piece->getPieceType() == PieceType::Pawn) {
-    return isValidPawnMove(board, move, color);
-  }
-
-  if (piece->getPieceType() == PieceType::Knight) {
-    return isValidKnightMove(board, move, color);
-  }
-
-  if (piece->getPieceType() == PieceType::Rook) {
-    return isValidRookMove(board, move, color);
-  }
-
-  if (piece->getPieceType() == PieceType::Bishop) {
-    return isValidBishopMove(board, move, color);
-  }
-
-  if (piece->getPieceType() == PieceType::Queen) {
-    return isValidQueenMove(board, move, color);
-  }
-
-  if (piece->getPieceType() == PieceType::King) {
-    return isValidKingMove(board, move, color) ||
-           isValidCastlingMove(board, move, color);
-  }
-
-  return false;
+  return true;
 }
 
 bool MoveValidator::wouldLeaveKingInCheck(Board board, const Move &move,
@@ -275,17 +265,11 @@ bool MoveValidator::hasAnyLegalMove(const Board &board, Color color) const {
 }
 
 bool MoveValidator::isCheckmate(const Board &board, Color color) const {
-  if (isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
-    return true;
-  }
-  return false;
+  return isKingInCheck(board, color) && !hasAnyLegalMove(board, color);
 }
 
 bool MoveValidator::isStalemate(const Board &board, Color color) const {
-  if (!isKingInCheck(board, color) && !hasAnyLegalMove(board, color)) {
-    return true;
-  }
-  return false;
+  return !isKingInCheck(board, color) && !hasAnyLegalMove(board, color);
 }
 
 bool MoveValidator::isOccupiedByOwnPiece(const Board &board,
@@ -436,34 +420,6 @@ bool MoveValidator::isValidKnightMove(const Board &board, const Move &move,
     return true;
   }
 
-  return false;
-}
-
-bool MoveValidator::isPawnDoubleMove(const Board &board, const Move &move,
-                                     Color color) {
-  const Piece *pawn = board.getPiece(move.getFrom());
-  if (pawn == nullptr || pawn->getPieceType() != PieceType::Pawn ||
-      !isMovingOwnPiece(pawn, color)) {
-    return false;
-  }
-
-  const Coordinate &from = move.getFrom();
-  const Coordinate &to = move.getTo();
-
-  if (from.getColumn() != to.getColumn()) {
-    return false;
-  }
-
-  const int direction = color == Color::White ? -1 : 1;
-  const int row_change =
-      static_cast<int>(to.getRow()) - static_cast<int>(from.getRow());
-
-  if (row_change == direction * 2 && isPawnOnStartingRank(pawn, from)) {
-    const std::size_t middle_row =
-        static_cast<std::size_t>(static_cast<int>(from.getRow()) + direction);
-    Coordinate middle_square(middle_row, from.getColumn());
-    return !board.isOccupied(middle_square) && !board.isOccupied(to);
-  }
   return false;
 }
 
@@ -698,7 +654,7 @@ bool MoveValidator::isValidCastlingMove(const Board &board, const Move &move,
 }
 
 bool MoveValidator::isCastlingMove(const Board &board, const Move &move,
-                                   Color color) {
+                                   Color color) const {
   Coordinate king_from = move.getFrom();
   Coordinate king_to = move.getTo();
 
