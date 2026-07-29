@@ -19,14 +19,36 @@ object-oriented design, move validation, game flow, and readable terminal UI.
 - Pawn promotion with selectable piece
 - Commands for board, moves, history, status, draw, resign, and quit
 
-## Build And Run
+## Requirements
+
+- Git
+- CMake 3.20 or newer
+- A C++20-compatible compiler
+
+An internet connection is required during the first CMake configuration so
+GoogleTest can be downloaded.
+
+## Quick Start
 
 ```bash
-make
-./chess
+git clone https://github.com/donotcallmehejlsberg/Chess.git
+cd Chess
+
+cmake -S . -B build
+cmake --build build
+./build/chess
 ```
 
-Or:
+## Run Tests
+
+```bash
+cmake --build build --target chess_tests
+ctest --test-dir build --output-on-failure
+```
+
+## Make Alternative
+
+To build and run only the game with Make:
 
 ```bash
 make run
