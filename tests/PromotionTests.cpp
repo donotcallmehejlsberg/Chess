@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Pieces/Bishop.hpp"
+#include "Pieces/King.hpp"
 #include "Pieces/Knight.hpp"
 #include "Pieces/Pawn.hpp"
 #include "Pieces/Queen.hpp"
@@ -100,6 +101,33 @@ TEST_F(PromotionTest, RejectsNonPawnPiece) {
 
   Piece *promoted_piece = white_player.promotePiece(
       old_rook, std::make_unique<Queen>(Color::White));
+
+  EXPECT_EQ(nullptr, promoted_piece);
+}
+
+TEST_F(PromotionTest, RejectsPromotionToDifferentColor) {
+  white_player.addPiece(std::move(pawn));
+
+  Piece *promoted_piece = white_player.promotePiece(
+      old_pawn, std::make_unique<Queen>(Color::Black));
+
+  EXPECT_EQ(nullptr, promoted_piece);
+}
+
+TEST_F(PromotionTest, RejectsPromotionToKing) {
+  white_player.addPiece(std::move(pawn));
+
+  Piece *promoted_piece =
+      white_player.promotePiece(old_pawn, std::make_unique<King>(Color::White));
+
+  EXPECT_EQ(nullptr, promoted_piece);
+}
+
+TEST_F(PromotionTest, RejectsPromotionToPawn) {
+  white_player.addPiece(std::move(pawn));
+
+  Piece *promoted_piece =
+      white_player.promotePiece(old_pawn, std::make_unique<Pawn>(Color::White));
 
   EXPECT_EQ(nullptr, promoted_piece);
 }

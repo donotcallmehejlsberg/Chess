@@ -25,6 +25,15 @@ Piece *Player::promotePiece(const Piece *old_piece,
     return nullptr;
   }
 
+  if (new_piece->getPieceColor() != old_piece->getPieceColor()) {
+    return nullptr;
+  }
+
+  const PieceType new_type = new_piece->getPieceType();
+  if (new_type == PieceType::King || new_type == PieceType::Pawn) {
+    return nullptr;
+  }
+
   for (auto &piece : pieces_) {
     if (piece.get() == old_piece) {
       piece = std::move(new_piece);
