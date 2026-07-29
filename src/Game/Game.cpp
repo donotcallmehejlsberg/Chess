@@ -546,15 +546,10 @@ void Game::printHelp() const {
             << std::endl;
   std::cout << "  moves     show legal moves for selected square" << std::endl;
   std::cout << "  history   show move history" << std::endl;
-  std::cout << "  undo      undo last move" << std::endl;
-  std::cout << "  save      save game" << std::endl;
-  std::cout << "  load      load game" << std::endl;
   std::cout << "  check     show if current player is in check" << std::endl;
   std::cout << "  rules     show input format and basic rules" << std::endl;
-  std::cout << "  new       start a new game" << std::endl;
   std::cout << "  resign    resign the game" << std::endl;
   std::cout << "  draw      offer a draw" << std::endl;
-  std::cout << "  restart   start a new game" << std::endl;
 }
 
 void Game::printRules() const {

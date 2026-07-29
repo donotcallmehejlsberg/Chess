@@ -15,6 +15,7 @@ object-oriented design, move validation, game flow, and readable terminal UI.
 - Captures, score tracking, and captured-piece display
 - Check, checkmate, and stalemate detection
 - Prevention of moves that leave the king in check
+- Castling and en passant
 - Pawn promotion with selectable piece
 - Commands for board, moves, history, status, draw, resign, and quit
 
@@ -43,6 +44,8 @@ make run
 | `status` | Show game status |
 | `captured` | Show captured pieces |
 | `check` | Show check status |
+| `help` | Show available commands |
+| `rules` | Show input format and basic rules |
 | `draw` | Offer a draw |
 | `resign` | Resign the game |
 | `quit` | Exit or resign during a game |
