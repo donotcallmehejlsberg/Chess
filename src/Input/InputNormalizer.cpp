@@ -6,7 +6,8 @@ std::string InputNormalizer::normalize(const std::string &input) const {
   std::string lower_input = input;
 
   for (char &character : lower_input) {
-    character = static_cast<char>(std::tolower(character));
+    character =
+        static_cast<char>(std::tolower(static_cast<unsigned char>(character)));
   }
 
   return lower_input;
