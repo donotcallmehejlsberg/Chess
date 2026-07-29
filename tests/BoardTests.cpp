@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <stdexcept>
+
 #include "Board/Board.hpp"
 #include "Movement/Move.hpp"
 #include "Pieces/Pawn.hpp"
@@ -33,6 +35,46 @@ TEST(BoardTest, RejectsInvalidCoordinates) {
 
   EXPECT_FALSE(board.isValidCoordinate(coordinate_3));
   EXPECT_FALSE(board.isValidCoordinate(coordinate_4));
+}
+
+TEST(BoardTest, ReturnsNullForInvalidPieceCoordinate) {
+  const Board board;
+  const Coordinate invalid_row(8, 0);
+  const Coordinate invalid_column(0, 8);
+
+  EXPECT_EQ(nullptr, board.getPiece(invalid_row));
+  EXPECT_EQ(nullptr, board.getPiece(invalid_column));
+}
+
+TEST(BoardTest, IgnoresSetPieceAtInvalidCoordinate) {
+  Board board;
+  Rook rook(Color::White);
+  const Coordinate invalid_coordinate(8, 0);
+
+  board.setPiece(invalid_coordinate, &rook);
+
+  EXPECT_EQ(nullptr, board.getPiece(invalid_coordinate));
+}
+
+TEST(BoardTest, ReturnsNullWhenRemovingInvalidCoordinate) {
+  Board board;
+  const Coordinate invalid_coordinate(8, 0);
+
+  EXPECT_EQ(nullptr, board.removePiece(invalid_coordinate));
+}
+
+TEST(BoardTest, ReportsInvalidCoordinateAsUnoccupied) {
+  const Board board;
+  const Coordinate invalid_coordinate(8, 0);
+
+  EXPECT_FALSE(board.isOccupied(invalid_coordinate));
+}
+
+TEST(BoardTest, ThrowsWhenGettingSquareAtInvalidCoordinate) {
+  const Board board;
+  const Coordinate invalid_coordinate(8, 0);
+
+  EXPECT_THROW(board.getSquare(invalid_coordinate), std::out_of_range);
 }
 
 TEST(BoardTest, SetsAndGetsPiece) {
@@ -123,6 +165,21 @@ TEST(BoardTest, DoesNothingWhenMovingFromEmptySquare) {
   EXPECT_EQ(&rook, board.getPiece(rook_coordinate));
   EXPECT_FALSE(board.isOccupied(empty_from));
   EXPECT_FALSE(board.isOccupied(to));
+}
+
+TEST(BoardTest, PreservesPieceWhenMoveDestinationIsInvalid) {
+  Board board;
+  Rook rook(Color::White);
+
+  const Coordinate from(0, 0);
+  const Coordinate invalid_to(8, 0);
+  const Move move(from, invalid_to);
+
+  board.setPiece(from, &rook);
+  board.movePiece(move);
+
+  EXPECT_EQ(&rook, board.getPiece(from));
+  EXPECT_FALSE(rook.hasMoved());
 }
 
 TEST(BoardTest, ClearsAllPieces) {
