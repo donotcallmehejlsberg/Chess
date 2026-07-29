@@ -11,16 +11,14 @@
 class MoveParser {
 public:
   std::optional<Move> handleMove(const std::string &input) const;
+  std::optional<Coordinate> parseCoordinate(const std::string &input) const;
 
+private:
   bool isEmpty(const std::string &input) const;
-
   bool hasValidFromCoordinate(const std::string &input) const;
   bool hasValidToCoordinate(const std::string &input) const;
   bool hasValidLength(const std::string &input) const;
   bool hasValidSeparator(const std::string &input) const;
-  std::optional<Coordinate> parseCoordinate(const std::string &input) const;
-
-
 };
 
 #endif
