@@ -2,6 +2,7 @@
 #define PLAYER_HPP
 
 #include "Color.hpp"
+#include "PieceType.hpp"
 #include "Pieces/Piece.hpp"
 
 #include <memory>
@@ -31,7 +32,6 @@ public:
 
   Piece *promotePiece(const Piece *old_piece, std::unique_ptr<Piece> new_piece);
 
-  std::string pieceTypeToString(PieceType piece_type) const;
   void printCapturedPieces() const;
 
   std::string getColorName() const;

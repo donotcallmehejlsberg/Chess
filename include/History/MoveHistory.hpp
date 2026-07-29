@@ -12,7 +12,6 @@ private:
   std::vector<MoveRecord> records_;
 
   std::string coordinateToText(const Coordinate &coordinate) const;
-  std::string pieceTypeToText(PieceType piece_type) const;
   void printRecord(const MoveRecord &record) const;
 
 public:

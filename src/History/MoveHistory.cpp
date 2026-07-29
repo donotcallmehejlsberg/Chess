@@ -1,6 +1,7 @@
 #include "History/MoveHistory.hpp"
 
 #include "Color.hpp"
+#include "PieceType.hpp"
 
 #include <iostream>
 #include <optional>
@@ -16,24 +17,6 @@ std::string MoveHistory::coordinateToText(const Coordinate &coordinate) const {
   return text;
 }
 
-std::string MoveHistory::pieceTypeToText(PieceType piece_type) const {
-  switch (piece_type) {
-  case PieceType::Pawn:
-    return "Pawn";
-  case PieceType::Knight:
-    return "Knight";
-  case PieceType::Bishop:
-    return "Bishop";
-  case PieceType::Rook:
-    return "Rook";
-  case PieceType::Queen:
-    return "Queen";
-  case PieceType::King:
-    return "King";
-  }
-  return "Unknown";
-}
-
 void MoveHistory::printRecord(const MoveRecord &record) const {
   if (record.getPlayerColor() == Color::White) {
     std::cout << "White: ";
@@ -46,12 +29,12 @@ void MoveHistory::printRecord(const MoveRecord &record) const {
 
   if (record.getCapturedPiece().has_value()) {
     std::cout << " captured "
-              << pieceTypeToText(record.getCapturedPiece().value());
+              << pieceTypeToString(record.getCapturedPiece().value());
   }
 
   if (record.getPromotedTo().has_value()) {
     std::cout << " promoted to "
-              << pieceTypeToText(record.getPromotedTo().value());
+              << pieceTypeToString(record.getPromotedTo().value());
   }
 }
 

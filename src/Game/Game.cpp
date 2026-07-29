@@ -1,4 +1,5 @@
 #include "Game/Game.hpp"
+#include "PieceType.hpp"
 
 #include <iostream>
 #include <map>
@@ -97,8 +98,8 @@ bool Game::processMoveInput(const std::string &input) {
 
   const Piece *captured_piece = board_.getPiece(valid_move.getTo());
   if (captured_piece == nullptr &&
-      move_validator_.isEnPassantMove(board_, valid_move,
-                                      current_player_color_, last_record)) {
+      move_validator_.isEnPassantMove(board_, valid_move, current_player_color_,
+                                      last_record)) {
     captured_piece = board_.getPiece(last_record.value().getTo());
   }
 
@@ -389,7 +390,7 @@ void Game::handlePromotion(const Move &move) {
       createPromotionPiece(piece->getPieceColor());
 
   const std::string promoted_piece_name =
-      player.pieceTypeToString(new_piece->getPieceType());
+      pieceTypeToString(new_piece->getPieceType());
 
   Piece *promoted_piece = player.promotePiece(piece, std::move(new_piece));
 
