@@ -5,8 +5,16 @@
 #include <string>
 
 #include "Color.hpp"
-#include "Player.hpp"
 #include "Game/GameResult.hpp"
+#include "Player.hpp"
+
+struct GameStatus {
+  std::string currentPlayerName;
+  GameResult result;
+  bool isInCheck;
+  int whiteScore;
+  int blackScore;
+};
 
 class GameView {
  public:
@@ -20,6 +28,9 @@ class GameView {
                            const Player &blackPlayer) const;
 
   void printResult(GameResult result, const Player &player) const;
+  void printCheckStatus(const Player &player, bool isInCheck) const;
+  void printStatus(const GameStatus &status, const Player &whitePlayer,
+                   const Player &blackPlayer) const;
 };
 
 #endif

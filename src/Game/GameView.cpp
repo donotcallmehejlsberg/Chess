@@ -271,3 +271,62 @@ void GameView::printResult(GameResult result, const Player &player) const {
 
   std::cout << RESET << '\n';
 }
+
+void GameView::printCheckStatus(const Player &player, bool isInCheck) const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── CHECK STATUS ─────────────────────────\n\n";
+
+  if (isInCheck) {
+    std::cout << CYAN << "  ◆ " << WHITE << player.getColorName() << GRAY
+              << " is in check!\n";
+  } else {
+    std::cout << GREEN << "  ◆ " << WHITE << player.getColorName() << GRAY
+              << " is not in check.\n";
+  }
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << RESET << '\n';
+}
+
+void GameView::printStatus(const GameStatus &status, const Player &whitePlayer,
+                           const Player &blackPlayer) const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── GAME STATUS ──────────────────────────\n\n";
+
+  std::cout << CYAN << "  ◆ CURRENT PLAYER\n";
+  std::cout << WHITE << "    " << status.currentPlayerName << "\n\n";
+
+  std::cout << CYAN << "  ◆ RESULT\n";
+  std::cout << WHITE << "    ";
+
+  if (status.result == GameResult::InProgress) {
+    std::cout << "In progress";
+  } else if (status.result == GameResult::WhiteWon) {
+    std::cout << "White won";
+  } else if (status.result == GameResult::BlackWon) {
+    std::cout << "Black won";
+  } else if (status.result == GameResult::Draw) {
+    std::cout << "Draw";
+  } else if (status.result == GameResult::Quit) {
+    std::cout << "Quit";
+  }
+
+  std::cout << "\n\n";
+
+  std::cout << CYAN << "  ◆ CHECK\n";
+  std::cout << WHITE << "    " << (status.isInCheck ? "Yes" : "No") << "\n\n";
+
+  std::cout << CYAN << "  ◆ SCORE\n";
+  std::cout << WHITE << "    White: " << status.whiteScore << '\n'
+            << "    Black: " << status.blackScore << '\n';
+
+  printCapturedPieces(whitePlayer, blackPlayer);
+
+  std::cout << RESET;
+}
