@@ -90,9 +90,7 @@ class Game {
   bool handleInvalidMove() const;
 
   // Prints game messages, menus, rules, and status information.
-  void printResult() const;
   void printCheckStatus() const;
-  void printCapturedPieces() const;
   void printStatus() const;
 };
 

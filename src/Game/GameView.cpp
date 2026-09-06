@@ -218,3 +218,56 @@ void GameView::printRules() const {
 
   std::cout << RESET << '\n';
 }
+
+void GameView::printCapturedPieces(const Player &whitePlayer,
+                                   const Player &blackPlayer) const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── CAPTURED PIECES ──────────────────────\n\n";
+
+  std::cout << CYAN << "  ♔ WHITE\n";
+  std::cout << WHITE << "    ";
+  whitePlayer.printCapturedPieces();
+  std::cout << '\n';
+
+  std::cout << CYAN << "  ♚ BLACK\n";
+  std::cout << WHITE << "    ";
+  blackPlayer.printCapturedPieces();
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << RESET << '\n';
+}
+
+void GameView::printResult(GameResult result, const Player &player) const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── GAME RESULT ──────────────────────────\n\n";
+
+  if (result == GameResult::WhiteWon) {
+    std::cout << WHITE << "  ♔  WHITE WINS\n";
+    std::cout << GRAY << "     Checkmate. Game over.\n";
+
+  } else if (result == GameResult::BlackWon) {
+    std::cout << WHITE << "  ♚  BLACK WINS\n";
+    std::cout << GRAY << "     Checkmate. Game over.\n";
+
+  } else if (result == GameResult::Draw) {
+    std::cout << CYAN << "  ◆  DRAW\n";
+    std::cout << GRAY << "     The game ended without a winner.\n";
+
+  } else if (result == GameResult::Quit) {
+    std::cout << CYAN << "  ◆  GAME ENDED\n";
+    std::cout << GRAY << "     " << player.getColorName()
+              << " quit the game.\n";
+  }
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << RESET << '\n';
+}

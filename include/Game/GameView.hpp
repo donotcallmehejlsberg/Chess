@@ -5,6 +5,8 @@
 #include <string>
 
 #include "Color.hpp"
+#include "Player.hpp"
+#include "Game/GameResult.hpp"
 
 class GameView {
  public:
@@ -14,6 +16,10 @@ class GameView {
   void printHelp() const;
   void printRules() const;
   void printTurnPrompt(Color color) const;
+  void printCapturedPieces(const Player &whitePlayer,
+                           const Player &blackPlayer) const;
+
+  void printResult(GameResult result, const Player &player) const;
 };
 
 #endif

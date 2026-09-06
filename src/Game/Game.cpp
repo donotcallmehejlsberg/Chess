@@ -22,7 +22,7 @@ void Game::run() {
   while (result_ == GameResult::InProgress) {
     handleTurn();
   }
-  printResult();
+  view_.printResult(result_, getCurrentPlayer());
 }
 
 bool Game::handleMainMenu() {
@@ -219,7 +219,7 @@ Game::CommandResult Game::handleCheck() {
 }
 
 Game::CommandResult Game::handleCaptured() {
-  printCapturedPieces();
+  view_.printCapturedPieces(white_player_, black_player_);
   return CommandResult::Handled;
 }
 
@@ -496,19 +496,6 @@ bool Game::handleInvalidMove() const {
   return false;
 }
 
-void Game::printResult() const {
-  if (result_ == GameResult::WhiteWon) {
-    std::cout << "White won!" << std::endl;
-  } else if (result_ == GameResult::BlackWon) {
-    std::cout << "Black won!" << std::endl;
-  } else if (result_ == GameResult::Draw) {
-    std::cout << "The game ended in a draw." << std::endl;
-  } else if (result_ == GameResult::Quit) {
-    std::cout << getCurrentPlayer().getColorName() << " quit the game."
-              << std::endl;
-  }
-}
-
 void Game::printCheckStatus() const {
   if (move_validator_.getCheckedKingCoordinate(board_, current_player_color_)
           .has_value()) {
@@ -518,16 +505,6 @@ void Game::printCheckStatus() const {
     std::cout << getCurrentPlayer().getColorName() << " is not in check."
               << std::endl;
   }
-}
-
-void Game::printCapturedPieces() const {
-  std::cout << "White captured: ";
-  white_player_.printCapturedPieces();
-  std::cout << std::endl;
-
-  std::cout << "Black captured: ";
-  black_player_.printCapturedPieces();
-  std::cout << std::endl;
 }
 
 void Game::printStatus() const {
@@ -560,5 +537,5 @@ void Game::printStatus() const {
 
   std::cout << "  White score: " << white_player_.getScore() << std::endl;
   std::cout << "  Black score: " << black_player_.getScore() << std::endl;
-  printCapturedPieces();
+  view_.printCapturedPieces(white_player_, black_player_);
 }
