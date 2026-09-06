@@ -7,6 +7,7 @@
 #include "Color.hpp"
 #include "Game/GameResult.hpp"
 #include "Player.hpp"
+#include "History/MoveHistory.hpp"
 
 struct GameStatus {
   std::string currentPlayerName;
@@ -18,7 +19,6 @@ struct GameStatus {
 
 class GameView {
  public:
-  // Prints game messages, menus, rules, and status information.
   void printWelcomeMessage() const;
   void printMainMenu() const;
   void printHelp() const;
@@ -38,8 +38,30 @@ class GameView {
   void printQuitConfirmation(const Player &player) const;
   void printQuitConfirmed(const Player &player) const;
   void printQuitCancelled() const;
-  void printResignation(const Player &player) const;
   void printYesNoPrompt() const;
+
+  void printResignation(const Player &player) const;
+
+  void printDrawOffer(const Player &currentPlayer,
+                      const Player &opponentPlayer) const;
+  void printDrawDeclined() const;
+
+  void printLegalMovePrompt() const;
+  void printNoPieceOnSquare() const;
+  void printChooseOwnPiece() const;
+  void printNoLegalMoves() const;
+
+  void printCheckmate() const;
+  void printStalemate() const;
+
+  void printPromotionMenu() const;
+  void printPromotionResult(const Player &player,
+                            const std::string &pieceName) const;
+  void printInvalidPromotionChoice() const;
+
+  void printInvalidInput() const;
+  void printInvalidMove() const;
+
 };
 
 #endif

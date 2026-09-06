@@ -1,6 +1,5 @@
 #include "Game/Game.hpp"
 
-#include <iostream>
 #include <map>
 
 #include "PieceType.hpp"
@@ -157,26 +156,22 @@ Game::CommandResult Game::handleQuit() {
     }
 
     if (answer == "no") {
-      std::cout << "Quit cancelled." << std::endl;
+      view_.printQuitCancelled();
       return CommandResult::Handled;
     }
 
-    std::cout << "Please answer yes or no: ";
+    view_.printYesNoPrompt();
   }
 }
 
 Game::CommandResult Game::handleResign() {
-  std::cout << getCurrentPlayer().getColorName() << " resigned." << std::endl;
+  view_.printResignation(getCurrentPlayer());
   setOpponentAsWinner();
   return CommandResult::GameEnded;
 }
 
 Game::CommandResult Game::handleDrawOffer() {
-  std::cout << getCurrentPlayer().getColorName() << " offered a draw."
-            << std::endl;
-
-  std::cout << getOpponentPlayer().getColorName()
-            << ", accept draw? (yes/no): ";
+  view_.printDrawOffer(getCurrentPlayer(), getOpponentPlayer());
 
   std::string answer = input_normalizer_.normalize(input_reader_.readLine());
 
@@ -186,7 +181,7 @@ Game::CommandResult Game::handleDrawOffer() {
   }
 
   if (answer == "no") {
-    std::cout << "Draw offer declined." << std::endl;
+    view_.printDrawDeclined();
     return CommandResult::Handled;
   }
 
@@ -223,7 +218,7 @@ Game::CommandResult Game::handleCaptured() {
 
 Game::CommandResult Game::handleLegalMoves() {
   while (true) {
-    std::cout << "Enter square (or cancel): ";
+    view_.printLegalMovePrompt();
 
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
     if (input == "cancel") {
@@ -238,12 +233,12 @@ Game::CommandResult Game::handleLegalMoves() {
 
     const Piece *piece = board_.getPiece(from.value());
     if (piece == nullptr) {
-      std::cout << "There is no piece on this square." << std::endl;
+      view_.printNoPieceOnSquare();
       continue;
     }
 
     if (piece->getPieceColor() != current_player_color_) {
-      std::cout << "Please choose your piece." << std::endl;
+      view_.printChooseOwnPiece();
       continue;
     }
 
@@ -251,7 +246,7 @@ Game::CommandResult Game::handleLegalMoves() {
         board_, from.value(), current_player_color_);
 
     if (legal_moves.empty()) {
-      std::cout << "This piece has no legal moves." << std::endl;
+      view_.printNoLegalMoves();
       return CommandResult::Handled;
     }
 
@@ -326,13 +321,13 @@ void Game::finishTurnAfterMove() {
 
   if (move_validator_.isCheckmate(board_, current_player_color_)) {
     printCheckStatus();
-    std::cout << "Checkmate!" << std::endl;
+    view_.printCheckmate();
     setOpponentAsWinner();
     return;
   }
 
   if (move_validator_.isStalemate(board_, current_player_color_)) {
-    std::cout << "Stalemate!" << std::endl;
+    view_.printStalemate();
     result_ = GameResult::Draw;
     return;
   }
@@ -406,9 +401,7 @@ std::optional<PieceType> Game::handlePromotion(const Move &move) {
 
   if (promoted_piece != nullptr) {
     board_.setPiece(to, promoted_piece);
-    std::cout << player.getColorName()
-              << " pawn reached the last rank and was promoted to "
-              << promoted_piece_name << "!" << std::endl;
+    view_.printPromotionResult(player, promoted_piece_name);
     return promoted_piece->getPieceType();
   }
   return std::nullopt;
@@ -416,13 +409,7 @@ std::optional<PieceType> Game::handlePromotion(const Move &move) {
 
 std::unique_ptr<Piece> Game::createPromotionPiece(Color color) {
   while (true) {
-    std::cout << "Pawn promotion!" << std::endl;
-    std::cout << "Choose piece:" << std::endl;
-    std::cout << "  q - Queen" << std::endl;
-    std::cout << "  r - Rook" << std::endl;
-    std::cout << "  b - Bishop" << std::endl;
-    std::cout << "  n - Knight" << std::endl;
-    std::cout << "> ";
+    view_.printPromotionMenu();
 
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
     if (input == "queen" || input == "q") {
@@ -434,9 +421,7 @@ std::unique_ptr<Piece> Game::createPromotionPiece(Color color) {
     } else if (input == "knight" || input == "n") {
       return std::make_unique<Knight>(color);
     }
-    std::cout << "Invalid promotion choice. Please choose queen, rook, "
-                 "bishop, or knight."
-              << std::endl;
+    view_.printInvalidPromotionChoice();
   }
 }
 
@@ -479,7 +464,7 @@ const Player &Game::getOpponentPlayer() const {
 }
 
 bool Game::handleInvalidInput() const {
-  std::cout << "Invalid input." << std::endl;
+  view_.printInvalidInput();
   return false;
 }
 
@@ -488,7 +473,7 @@ bool Game::handleInvalidMove() const {
           .has_value()) {
     printCheckStatus();
   } else {
-    std::cout << "Invalid move." << std::endl;
+    view_.printInvalidMove();
   }
 
   return false;

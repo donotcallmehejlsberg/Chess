@@ -367,3 +367,64 @@ void GameView::printResignation(const Player &player) const {
 void GameView::printYesNoPrompt() const {
   std::cout << "Please answer yes or no: ";
 }
+
+void GameView::printDrawOffer(const Player &currentPlayer,
+                              const Player &opponentPlayer) const {
+  std::cout << currentPlayer.getColorName() << " offered a draw." << '\n';
+  std::cout << opponentPlayer.getColorName() << ", accept draw? (yes/no): ";
+}
+
+void GameView::printDrawDeclined() const {
+  std::cout << "Draw offer declined." << '\n';
+}
+
+void GameView::printLegalMovePrompt() const {
+  std::cout << "Enter square (or cancel): ";
+}
+
+void GameView::printNoPieceOnSquare() const {
+  std::cout << "There is no piece on this square." << '\n';
+}
+
+void GameView::printChooseOwnPiece() const {
+  std::cout << "Please choose your piece." << '\n';
+}
+
+void GameView::printNoLegalMoves() const {
+  std::cout << "This piece has no legal moves." << '\n';
+}
+
+void GameView::printCheckmate() const { std::cout << "Checkmate!" << '\n'; }
+
+void GameView::printStalemate() const { std::cout << "Stalemate!" << '\n'; }
+
+void GameView::printPromotionMenu() const {
+  std::cout << "Pawn promotion!" << '\n';
+  std::cout << "Choose piece:" << '\n';
+  std::cout << "  q - Queen" << '\n';
+  std::cout << "  r - Rook" << '\n';
+  std::cout << "  b - Bishop" << '\n';
+  std::cout << "  n - Knight" << '\n';
+  std::cout << "> ";
+}
+
+void GameView::printPromotionResult(const Player &player,
+                                    const std::string &pieceName) const {
+  std::cout << player.getColorName()
+            << " pawn reached the last rank and was promoted to " << pieceName
+            << "!" << '\n';
+}
+
+void GameView::printInvalidPromotionChoice() const {
+  std::cout << "Invalid promotion choice. Please choose queen, rook, bishop, "
+               "or knight."
+            << '\n';
+}
+
+void GameView::printInvalidInput() const {
+  std::cout << "Invalid input." << '\n';
+}
+
+void GameView::printInvalidMove() const {
+  std::cout << "Invalid move." << '\n';
+}
