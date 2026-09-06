@@ -29,10 +29,9 @@ class Player {
 
   void addPiece(std::unique_ptr<Piece> piece);
   void addCapturedPiece(PieceType piece_type);
+  const std::vector<PieceType> &getCapturedPieces() const;
 
   Piece *promotePiece(const Piece *old_piece, std::unique_ptr<Piece> new_piece);
-
-  void printCapturedPieces() const;
 
   std::string getColorName() const;
 };

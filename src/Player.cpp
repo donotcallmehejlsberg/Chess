@@ -1,7 +1,5 @@
 #include "Player.hpp"
 
-#include <iostream>
-
 Player::Player(Color color) : color_(color), score_(INITIAL_SCORE) {}
 
 Color Player::getPlayerColor() const { return color_; }
@@ -16,6 +14,22 @@ void Player::addPiece(std::unique_ptr<Piece> piece) {
 
 void Player::addCapturedPiece(PieceType piece_type) {
   captured_pieces_.push_back(piece_type);
+}
+
+const std::vector<PieceType> &Player::getCapturedPieces() const {
+  return captured_pieces_;
+}
+
+std::string Player::getColorName() const {
+  if (color_ == Color::White) {
+    return "White";
+  }
+
+  if (color_ == Color::Black) {
+    return "Black";
+  }
+
+  return "Unknown";
 }
 
 Piece *Player::promotePiece(const Piece *old_piece,
@@ -41,26 +55,4 @@ Piece *Player::promotePiece(const Piece *old_piece,
     }
   }
   return nullptr;
-}
-
-void Player::printCapturedPieces() const {
-  if (captured_pieces_.empty()) {
-    std::cout << "-";
-    return;
-  }
-  for (const PieceType piece : captured_pieces_) {
-    std::cout << pieceTypeToString(piece) << " ";
-  }
-}
-
-std::string Player::getColorName() const {
-  if (color_ == Color::White) {
-    return "White";
-  }
-
-  if (color_ == Color::Black) {
-    return "Black";
-  }
-
-  return "Unknown";
 }

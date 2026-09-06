@@ -228,18 +228,86 @@ void GameView::printCapturedPieces(const Player &whitePlayer,
 
   std::cout << CYAN << "  ♔ WHITE\n";
   std::cout << WHITE << "    ";
-  whitePlayer.printCapturedPieces();
+  printCapturedPieceList(whitePlayer);
   std::cout << '\n';
 
   std::cout << CYAN << "  ♚ BLACK\n";
   std::cout << WHITE << "    ";
-  blackPlayer.printCapturedPieces();
+  printCapturedPieceList(blackPlayer);
   std::cout << '\n';
 
   std::cout << GREEN;
   std::cout << "\n  ─────────────────────────────────────────\n";
 
   std::cout << RESET << '\n';
+}
+
+void GameView::printCapturedPieceList(const Player &player) const {
+  const std::vector<PieceType> &capturedPieces = player.getCapturedPieces();
+  if (capturedPieces.empty()) {
+    std::cout << "-";
+    return;
+  }
+
+  for (const PieceType piece : capturedPieces) {
+    std::cout << pieceTypeToString(piece) << " ";
+  }
+}
+
+void GameView::printMoveHistory(const MoveHistory &moveHistory) const {
+  const std::vector<MoveRecord> &records = moveHistory.getRecords();
+  if (records.empty()) {
+    std::cout << "No moves yet." << '\n';
+    return;
+  }
+
+  std::cout << "Move history:" << '\n';
+
+  for (std::size_t index = 0; index < records.size(); index++) {
+    if (index % 2 == 0) {
+      std::cout << index / 2 + 1 << ". ";
+      printMoveRecord(records[index]);
+    } else {
+      std::cout << "   ";
+      printMoveRecord(records[index]);
+      std::cout << '\n';
+    }
+  }
+
+  if (records.size() % 2 != 0) {
+    std::cout << '\n';
+  }
+}
+
+std::string GameView::coordinateToText(const Coordinate &coordinate) const {
+  const char file = static_cast<char>('a' + coordinate.getColumn());
+  const char rank = static_cast<char>('8' - coordinate.getRow());
+
+  std::string text;
+  text += file;
+  text += rank;
+  return text;
+}
+
+void GameView::printMoveRecord(const MoveRecord &record) const {
+  if (record.getPlayerColor() == Color::White) {
+    std::cout << "White: ";
+  } else {
+    std::cout << "Black: ";
+  }
+
+  std::cout << coordinateToText(record.getFrom()) << " "
+            << coordinateToText(record.getTo());
+
+  if (record.getCapturedPieceType().has_value()) {
+    std::cout << " captured "
+              << pieceTypeToString(record.getCapturedPieceType().value());
+  }
+
+  if (record.getPromotedPieceType().has_value()) {
+    std::cout << " promoted to "
+              << pieceTypeToString(record.getPromotedPieceType().value());
+  }
 }
 
 void GameView::printResult(GameResult result, const Player &player) const {

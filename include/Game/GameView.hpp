@@ -6,8 +6,8 @@
 
 #include "Color.hpp"
 #include "Game/GameResult.hpp"
-#include "Player.hpp"
 #include "History/MoveHistory.hpp"
+#include "Player.hpp"
 
 struct GameStatus {
   std::string currentPlayerName;
@@ -26,6 +26,7 @@ class GameView {
   void printTurnPrompt(Color color) const;
   void printCapturedPieces(const Player &whitePlayer,
                            const Player &blackPlayer) const;
+  void printMoveHistory(const MoveHistory &moveHistory) const;
 
   void printResult(GameResult result, const Player &player) const;
   void printCheckStatus(const Player &player, bool isInCheck) const;
@@ -62,6 +63,10 @@ class GameView {
   void printInvalidInput() const;
   void printInvalidMove() const;
 
+ private:
+  void printCapturedPieceList(const Player &player) const;
+  std::string coordinateToText(const Coordinate &coordinate) const;
+  void printMoveRecord(const MoveRecord &record) const;
 };
 
 #endif

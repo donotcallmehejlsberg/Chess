@@ -265,7 +265,7 @@ Game::CommandResult Game::handleStatus() {
 }
 
 Game::CommandResult Game::handleHistory() {
-  move_history_.printHistory();
+  view_.printMoveHistory(move_history_);
   return CommandResult::Handled;
 }
 
