@@ -1,14 +1,16 @@
 #include "Game/Game.hpp"
 
-#include <map>
-
 #include "PieceType.hpp"
 
 Game::Game()
     : white_player_(Color::White),
       black_player_(Color::Black),
       current_player_color_(Color::White),
-      result_(GameResult::InProgress) {}
+      result_(GameResult::InProgress),
+      command_handler_(board_, white_player_, black_player_,
+                       current_player_color_, result_, view_, renderer_,
+                       move_validator_, move_parser_, input_reader_,
+                       input_normalizer_, move_history_) {}
 
 void Game::run() {
   view_.printWelcomeMessage();
@@ -66,7 +68,7 @@ void Game::handleTurn() {
     view_.printTurnPrompt(current_player_color_);
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
 
-    const CommandResult command_result = handleCommand(input);
+    const CommandResult command_result = command_handler_.handleCommand(input);
     if (command_result == CommandResult::GameEnded) {
       return;
     }
@@ -126,148 +128,6 @@ bool Game::processMoveInput(const std::string &input) {
 }
 
 bool Game::isGameOver() const { return result_ != GameResult::InProgress; }
-
-Game::CommandResult Game::handleCommand(const std::string &input) {
-  static const std::map<std::string, CommandHandler> commands = {
-      {"quit", &Game::handleQuit},         {"resign", &Game::handleResign},
-      {"help", &Game::handleHelp},         {"rules", &Game::handleRules},
-      {"check", &Game::handleCheck},       {"board", &Game::handleBoard},
-      {"captured", &Game::handleCaptured}, {"draw", &Game::handleDrawOffer},
-      {"moves", &Game::handleLegalMoves},  {"status", &Game::handleStatus},
-      {"history", &Game::handleHistory}};
-  const auto command = commands.find(input);
-  if (command == commands.end()) {
-    return CommandResult::NotCommand;
-  }
-
-  return (this->*(command->second))();
-}
-
-Game::CommandResult Game::handleQuit() {
-  view_.printQuitConfirmation(getCurrentPlayer());
-
-  while (true) {
-    std::string answer = input_normalizer_.normalize(input_reader_.readLine());
-
-    if (answer == "yes") {
-      view_.printQuitConfirmed(getCurrentPlayer());
-      setOpponentAsWinner();
-      return CommandResult::GameEnded;
-    }
-
-    if (answer == "no") {
-      view_.printQuitCancelled();
-      return CommandResult::Handled;
-    }
-
-    view_.printYesNoPrompt();
-  }
-}
-
-Game::CommandResult Game::handleResign() {
-  view_.printResignation(getCurrentPlayer());
-  setOpponentAsWinner();
-  return CommandResult::GameEnded;
-}
-
-Game::CommandResult Game::handleDrawOffer() {
-  view_.printDrawOffer(getCurrentPlayer(), getOpponentPlayer());
-
-  std::string answer = input_normalizer_.normalize(input_reader_.readLine());
-
-  if (answer == "yes") {
-    result_ = GameResult::Draw;
-    return CommandResult::GameEnded;
-  }
-
-  if (answer == "no") {
-    view_.printDrawDeclined();
-    return CommandResult::Handled;
-  }
-
-  handleInvalidInput();
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleBoard() {
-  renderer_.printBoard(
-      board_, getCurrentPlayer(),
-      move_validator_.getCheckedKingCoordinate(board_, current_player_color_));
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleHelp() {
-  view_.printHelp();
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleRules() {
-  view_.printRules();
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleCheck() {
-  printCheckStatus();
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleCaptured() {
-  view_.printCapturedPieces(white_player_, black_player_);
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleLegalMoves() {
-  while (true) {
-    view_.printLegalMovePrompt();
-
-    std::string input = input_normalizer_.normalize(input_reader_.readLine());
-    if (input == "cancel") {
-      return CommandResult::Handled;
-    }
-
-    std::optional<Coordinate> from = move_parser_.parseCoordinate(input);
-    if (!from.has_value()) {
-      handleInvalidInput();
-      continue;
-    }
-
-    const Piece *piece = board_.getPiece(from.value());
-    if (piece == nullptr) {
-      view_.printNoPieceOnSquare();
-      continue;
-    }
-
-    if (piece->getPieceColor() != current_player_color_) {
-      view_.printChooseOwnPiece();
-      continue;
-    }
-
-    std::vector<Coordinate> legal_moves = move_validator_.getLegalMovesForPiece(
-        board_, from.value(), current_player_color_);
-
-    if (legal_moves.empty()) {
-      view_.printNoLegalMoves();
-      return CommandResult::Handled;
-    }
-
-    renderer_.printBoard(
-        board_, getCurrentPlayer(),
-        move_validator_.getCheckedKingCoordinate(board_, current_player_color_),
-        legal_moves);
-
-    return CommandResult::Handled;
-  }
-}
-
-Game::CommandResult Game::handleStatus() {
-  printStatus();
-  return CommandResult::Handled;
-}
-
-Game::CommandResult Game::handleHistory() {
-  view_.printMoveHistory(move_history_);
-  return CommandResult::Handled;
-}
 
 std::optional<PieceType> Game::executeMove(const Move &move) {
   std::optional<PieceType> promoted_piece_type = std::nullopt;
@@ -459,10 +319,6 @@ const Player &Game::getCurrentPlayer() const {
   return current_player_color_ == Color::White ? white_player_ : black_player_;
 }
 
-const Player &Game::getOpponentPlayer() const {
-  return current_player_color_ == Color::White ? black_player_ : white_player_;
-}
-
 bool Game::handleInvalidInput() const {
   view_.printInvalidInput();
   return false;
@@ -485,14 +341,4 @@ void Game::printCheckStatus() const {
           .has_value();
 
   view_.printCheckStatus(getCurrentPlayer(), isInCheck);
-}
-
-void Game::printStatus() const {
-  const GameStatus status{
-      getCurrentPlayer().getColorName(), result_,
-      move_validator_.getCheckedKingCoordinate(board_, current_player_color_)
-          .has_value(),
-      white_player_.getScore(), black_player_.getScore()};
-
-  view_.printStatus(status, white_player_, black_player_);
 }

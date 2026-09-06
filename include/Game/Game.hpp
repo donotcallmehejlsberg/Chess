@@ -7,6 +7,7 @@
 #include "Board/Board.hpp"
 #include "Board/BoardRenderer.hpp"
 #include "Color.hpp"
+#include "Command/CommandHandler.hpp"
 #include "Game/GameResult.hpp"
 #include "Game/GameSetup.hpp"
 #include "Game/GameView.hpp"
@@ -24,9 +25,6 @@ class Game {
   void run();
 
  private:
-  enum class CommandResult { NotCommand, Handled, GameEnded };
-  using CommandHandler = CommandResult (Game::*)();
-
   // Stores the main game state and owned game objects.
   Board board_;
   Player white_player_;
@@ -45,25 +43,14 @@ class Game {
   InputNormalizer input_normalizer_;
   MoveHistory move_history_;
 
+  // Declared last because it stores references to the objects above.
+  CommandHandler command_handler_;
+
   // Controls the main game loop from menu to turn handling.
   bool handleMainMenu();
   void setupGame();
   void handleTurn();
   bool isGameOver() const;
-
-  // Handles text commands entered by the player.
-  CommandResult handleCommand(const std::string &input);
-  CommandResult handleQuit();
-  CommandResult handleResign();
-  CommandResult handleDrawOffer();
-  CommandResult handleBoard();
-  CommandResult handleHelp();
-  CommandResult handleRules();
-  CommandResult handleCheck();
-  CommandResult handleCaptured();
-  CommandResult handleLegalMoves();
-  CommandResult handleStatus();
-  CommandResult handleHistory();
 
   // Executes a validated move and updates the game afterwards.
   bool processMoveInput(const std::string &input);
@@ -81,7 +68,6 @@ class Game {
   // Finds players and updates whose turn or result it is.
   Player &getPlayerByColor(Color color);
   const Player &getCurrentPlayer() const;
-  const Player &getOpponentPlayer() const;
   void switchPlayer();
   void setOpponentAsWinner();
 
@@ -91,7 +77,6 @@ class Game {
 
   // Prints game messages, menus, rules, and status information.
   void printCheckStatus() const;
-  void printStatus() const;
 };
 
 #endif
