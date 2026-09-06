@@ -9,6 +9,7 @@
 #include "Color.hpp"
 #include "Game/GameResult.hpp"
 #include "Game/GameSetup.hpp"
+#include "Game/GameView.hpp"
 #include "History/MoveHistory.hpp"
 #include "Input/InputNormalizer.hpp"
 #include "Input/InputReader.hpp"
@@ -35,6 +36,8 @@ class Game {
   GameResult result_;
 
   GameSetup setup_;
+  GameView view_;
+
   BoardRenderer renderer_;
   MoveValidator move_validator_;
   MoveParser move_parser_;
@@ -87,13 +90,9 @@ class Game {
   bool handleInvalidMove() const;
 
   // Prints game messages, menus, rules, and status information.
-  void printWelcomeMessage() const;
-  void printMainMenu() const;
   void printTurnPrompt(Color color) const;
   void printResult() const;
   void printCheckStatus() const;
-  void printHelp() const;
-  void printRules() const;
   void printCapturedPieces() const;
   void printStatus() const;
 };

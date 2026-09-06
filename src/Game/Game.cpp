@@ -12,7 +12,7 @@ Game::Game()
       result_(GameResult::InProgress) {}
 
 void Game::run() {
-  printWelcomeMessage();
+  view_.printWelcomeMessage();
 
   if (!handleMainMenu()) {
     return;
@@ -27,7 +27,7 @@ void Game::run() {
 
 bool Game::handleMainMenu() {
   while (true) {
-    printMainMenu();
+    view_.printMainMenu();
     std::cout << "> ";
 
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
@@ -37,12 +37,12 @@ bool Game::handleMainMenu() {
     }
 
     if (input == "rules") {
-      printRules();
+      view_.printRules();
       continue;
     }
 
     if (input == "help") {
-      printHelp();
+      view_.printHelp();
       continue;
     }
 
@@ -205,12 +205,12 @@ Game::CommandResult Game::handleBoard() {
 }
 
 Game::CommandResult Game::handleHelp() {
-  printHelp();
+  view_.printHelp();
   return CommandResult::Handled;
 }
 
 Game::CommandResult Game::handleRules() {
-  printRules();
+  view_.printRules();
   return CommandResult::Handled;
 }
 
@@ -497,22 +497,6 @@ bool Game::handleInvalidMove() const {
   return false;
 }
 
-void Game::printWelcomeMessage() const {
-  std::cout << std::endl;
-  std::cout << "         WELCOME TO CHESS!         " << std::endl;
-  std::cout << "          ♜ ♞ ♝ ♛ ♚ ♝ ♞ ♜          " << std::endl;
-  std::cout << "          ♙ ♙ ♙ ♙ ♙ ♙ ♙ ♙          " << std::endl;
-  std::cout << std::endl;
-}
-
-void Game::printMainMenu() const {
-  std::cout << "Main menu:" << std::endl;
-  std::cout << "  start  start a new game" << std::endl;
-  std::cout << "  rules  show basic rules" << std::endl;
-  std::cout << "  help   show commands" << std::endl;
-  std::cout << "  quit   exit" << std::endl;
-}
-
 void Game::printTurnPrompt(Color color) const {
   if (color == Color::White) {
     std::cout << "White > ";
@@ -543,55 +527,6 @@ void Game::printCheckStatus() const {
     std::cout << getCurrentPlayer().getColorName() << " is not in check."
               << std::endl;
   }
-}
-
-void Game::printHelp() const {
-  std::cout << "Commands:" << std::endl;
-  std::cout << "  e2 e4     move a piece" << std::endl;
-  std::cout << "  board     print the board" << std::endl;
-  std::cout << "  captured  show captured pieces" << std::endl;
-  std::cout << "  help      show commands" << std::endl;
-  std::cout << "  quit      exit the game, or resign during a game"
-            << std::endl;
-  std::cout << "  status    show current player, result, score and captures"
-            << std::endl;
-  std::cout << "  moves     show legal moves for selected square" << std::endl;
-  std::cout << "  history   show move history" << std::endl;
-  std::cout << "  check     show if current player is in check" << std::endl;
-  std::cout << "  rules     show input format and basic rules" << std::endl;
-  std::cout << "  resign    resign the game" << std::endl;
-  std::cout << "  draw      offer a draw" << std::endl;
-}
-
-void Game::printRules() const {
-  std::cout << std::endl << "Basic rules:" << std::endl;
-  std::cout << "  Moves use this format: e2 e4" << std::endl;
-  std::cout << "  White moves first." << std::endl;
-  std::cout << "  You can only move your own pieces." << std::endl;
-  std::cout << "  You cannot move onto your own piece." << std::endl;
-  std::cout << "  Captures happen by moving onto an opponent piece."
-            << std::endl;
-  std::cout << std::endl;
-  std::cout << "Piece movement:" << std::endl;
-  std::cout << "  Pawn    moves forward, captures diagonally." << std::endl;
-  std::cout << "  Knight  moves in an L shape and can jump." << std::endl;
-  std::cout << "  Rook    moves horizontally or vertically." << std::endl;
-  std::cout << "  Bishop  moves diagonally." << std::endl;
-  std::cout << "  Queen   moves horizontally, vertically or diagonally."
-            << std::endl;
-  std::cout << "  King    moves one square in any direction." << std::endl;
-  std::cout << std::endl;
-  std::cout << "Ending the game:" << std::endl;
-  std::cout << "  Checkmate: a king is in check and has no legal move."
-            << std::endl;
-  std::cout << "  Stalemate: the current player has no legal move, but is not "
-               "in check."
-            << std::endl;
-  std::cout << "  Draw: both players agree that the game ends without a winner."
-            << std::endl;
-  std::cout << "  Resign: one player gives up, so the opponent wins."
-            << std::endl;
-  std::cout << std::endl;
 }
 
 void Game::printCapturedPieces() const {
