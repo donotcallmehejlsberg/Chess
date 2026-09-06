@@ -87,7 +87,8 @@ include/   headers
 src/       implementations
 
 Board/     board, square, coordinate, renderer
-Game/      game loop, setup, result flow
+Command/   command dispatch and command result flow
+Game/      game loop, setup, and match coordination
 Movement/  move parsing and validation
 Pieces/    chess piece classes
 Input/     input reading and normalization
