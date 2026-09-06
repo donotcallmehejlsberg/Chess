@@ -340,91 +340,194 @@ void GameView::printGameStartMessage() const {
   std::cout << RESET << '\n';
 }
 
-void GameView::printGoodbye() const { std::cout << "Goodbye." << '\n'; }
+void GameView::printGoodbye() const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── GAME CLOSED ──────────────────────────\n\n";
+
+  std::cout << WHITE;
+  std::cout << "  Thanks for playing.\n";
+
+  std::cout << GRAY;
+  std::cout << "  See you on the board.\n";
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << RESET << '\n';
+}
 
 void GameView::printInvalidCommand() const {
-  std::cout << "Invalid command." << '\n';
+  std::cout << GREEN << "  ! " << WHITE << "UNKNOWN COMMAND" << GRAY
+            << "  Type 'help' to see available commands." << RESET << '\n';
 }
 
 void GameView::printQuitConfirmation(const Player &player) const {
-  std::cout << player.getColorName()
-            << ", quitting during a game counts as resignation." << std::endl;
-  std::cout << "Are you sure? (yes/no): ";
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── QUIT GAME ────────────────────────────\n\n";
+
+  std::cout << WHITE << "  " << player.getColorName();
+  std::cout << GRAY << ", quitting counts as resignation.\n\n";
+
+  std::cout << CYAN << "  ◆ " << WHITE << "Are you sure? " << GRAY
+            << "[yes/no]\n";
+
+  std::cout << GREEN << "  ❯ " << RESET;
 }
 
 void GameView::printQuitConfirmed(const Player &player) const {
-  std::cout << player.getColorName() << " quit the game." << '\n';
+  std::cout << '\n';
+
+  std::cout << GREEN << "  ◆ " << WHITE << player.getColorName() << GRAY
+            << " left the game." << RESET << '\n';
 }
 
 void GameView::printQuitCancelled() const {
-  std::cout << "Quit cancelled." << '\n';
+  std::cout << GREEN << "  ◆ " << WHITE << "Quit cancelled." << RESET << '\n';
 }
 
 void GameView::printResignation(const Player &player) const {
-  std::cout << player.getColorName() << " resigned." << '\n';
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── RESIGNATION ──────────────────────────\n\n";
+
+  std::cout << WHITE << "  " << player.getColorName() << GRAY
+            << " resigned the game.\n";
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << RESET << '\n';
 }
 
 void GameView::printYesNoPrompt() const {
-  std::cout << "Please answer yes or no: ";
+  std::cout << GREEN << "  ! " << GRAY << "Please enter " << WHITE << "yes"
+            << GRAY << " or " << WHITE << "no" << GRAY << ".\n";
+
+  std::cout << GREEN << "  ❯ " << RESET;
 }
 
 void GameView::printDrawOffer(const Player &currentPlayer,
                               const Player &opponentPlayer) const {
-  std::cout << currentPlayer.getColorName() << " offered a draw." << '\n';
-  std::cout << opponentPlayer.getColorName() << ", accept draw? (yes/no): ";
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── DRAW OFFER ────────────────────────────\n\n";
+
+  std::cout << WHITE << "  " << currentPlayer.getColorName() << GRAY
+            << " offered a draw.\n";
+
+  std::cout << WHITE << "  " << opponentPlayer.getColorName() << GRAY
+            << ", accept the offer? " << WHITE << "[yes/no]\n\n";
+
+  std::cout << GREEN << "  ❯ " << RESET;
 }
 
 void GameView::printDrawDeclined() const {
-  std::cout << "Draw offer declined." << '\n';
+  std::cout << GREEN << "  ◆ " << WHITE << "Draw offer declined." << RESET
+            << '\n';
 }
 
 void GameView::printLegalMovePrompt() const {
-  std::cout << "Enter square (or cancel): ";
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── LEGAL MOVES ──────────────────────────\n\n";
+
+  std::cout << GRAY << "  Select a square " << WHITE << "(or 'cancel')\n";
+
+  std::cout << GREEN << "  ❯ " << RESET;
 }
 
 void GameView::printNoPieceOnSquare() const {
-  std::cout << "There is no piece on this square." << '\n';
+  std::cout << GREEN << "  ! " << WHITE << "No piece on this square." << RESET
+            << '\n';
 }
 
 void GameView::printChooseOwnPiece() const {
-  std::cout << "Please choose your piece." << '\n';
+  std::cout << GREEN << "  ! " << WHITE << "Choose one of your own pieces."
+            << RESET << '\n';
 }
 
 void GameView::printNoLegalMoves() const {
-  std::cout << "This piece has no legal moves." << '\n';
+  std::cout << GREEN << "  ◆ " << WHITE << "This piece has no legal moves."
+            << RESET << '\n';
 }
 
-void GameView::printCheckmate() const { std::cout << "Checkmate!" << '\n'; }
+void GameView::printCheckmate() const {
+  std::cout << '\n';
 
-void GameView::printStalemate() const { std::cout << "Stalemate!" << '\n'; }
+  std::cout << GREEN;
+  std::cout << "  ══ CHECKMATE ════════════════════════════\n\n";
+  std::cout << WHITE;
+  std::cout << "           ♚   G A M E   O V E R   ♔\n";
+  std::cout << GREEN;
+  std::cout << "\n  ═════════════════════════════════════════\n";
+
+  std::cout << RESET << '\n';
+}
+
+void GameView::printStalemate() const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ══ STALEMATE ════════════════════════════\n\n";
+  std::cout << CYAN << "  ◆ " << WHITE << "The game ends in a draw.\n";
+  std::cout << GREEN;
+  std::cout << "\n  ═════════════════════════════════════════\n";
+
+  std::cout << RESET << '\n';
+}
 
 void GameView::printPromotionMenu() const {
-  std::cout << "Pawn promotion!" << '\n';
-  std::cout << "Choose piece:" << '\n';
-  std::cout << "  q - Queen" << '\n';
-  std::cout << "  r - Rook" << '\n';
-  std::cout << "  b - Bishop" << '\n';
-  std::cout << "  n - Knight" << '\n';
-  std::cout << "> ";
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── PAWN PROMOTION ───────────────────────\n\n";
+
+  std::cout << CYAN;
+  std::cout << "  ◆ CHOOSE YOUR PIECE\n\n";
+
+  std::cout << GREEN << "  > " << WHITE << "q / queen" << GRAY
+            << "      Queen\n";
+
+  std::cout << GREEN << "  > " << WHITE << "r / rook" << GRAY
+            << "       Rook\n";
+
+  std::cout << GREEN << "  > " << WHITE << "b / bishop" << GRAY
+            << "     Bishop\n";
+
+  std::cout << GREEN << "  > " << WHITE << "n / knight" << GRAY
+            << "     Knight\n";
+
+  std::cout << GREEN;
+  std::cout << "\n  ─────────────────────────────────────────\n";
+
+  std::cout << GREEN << "  ❯ " << RESET;
 }
 
 void GameView::printPromotionResult(const Player &player,
                                     const std::string &pieceName) const {
-  std::cout << player.getColorName()
-            << " pawn reached the last rank and was promoted to " << pieceName
-            << "!" << '\n';
+  std::cout << '\n';
+  std::cout << GREEN << "  ◆ " << WHITE << player.getColorName() << GRAY
+            << " pawn promoted to " << CYAN << pieceName << GRAY << "!" << RESET
+            << '\n';
 }
 
 void GameView::printInvalidPromotionChoice() const {
-  std::cout << "Invalid promotion choice. Please choose queen, rook, bishop, "
-               "or knight."
+  std::cout << GREEN << "  ! " << WHITE << "INVALID PROMOTION CHOICE\n";
+  std::cout << GRAY << "    Choose queen, rook, bishop, or knight." << RESET
             << '\n';
 }
 
 void GameView::printInvalidInput() const {
-  std::cout << "Invalid input." << '\n';
+  std::cout << GREEN << "  ! " << WHITE << "INVALID INPUT" << RESET << '\n';
 }
 
 void GameView::printInvalidMove() const {
-  std::cout << "Invalid move." << '\n';
+  std::cout << GREEN << "  ! " << WHITE << "INVALID MOVE" << RESET << '\n';
 }
