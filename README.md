@@ -5,7 +5,7 @@ object-oriented design, move validation, game flow, and readable terminal UI.
 
 ## Preview
 
-![Chess board preview](assets/board-preview.png)
+![Chess gameplay demo](assets/gameplay.gif)
 
 ## Features
 
