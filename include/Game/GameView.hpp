@@ -13,6 +13,7 @@ class GameView {
   void printMainMenu() const;
   void printHelp() const;
   void printRules() const;
+  void printTurnPrompt(Color color) const;
 };
 
 #endif

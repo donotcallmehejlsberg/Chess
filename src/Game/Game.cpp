@@ -63,7 +63,7 @@ void Game::setupGame() {
 
 void Game::handleTurn() {
   while (true) {
-    printTurnPrompt(current_player_color_);
+    view_.printTurnPrompt(current_player_color_);
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
 
     const CommandResult command_result = handleCommand(input);
@@ -494,14 +494,6 @@ bool Game::handleInvalidMove() const {
   }
 
   return false;
-}
-
-void Game::printTurnPrompt(Color color) const {
-  if (color == Color::White) {
-    std::cout << "White > ";
-  } else if (color == Color::Black) {
-    std::cout << "Black > ";
-  }
 }
 
 void Game::printResult() const {
