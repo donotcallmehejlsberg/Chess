@@ -6,13 +6,18 @@
 #include "Player.hpp"
 
 namespace {
-const std::string ANSI_DARK_SQUARE_BACKGROUND = "\033[48;5;94m";
-const std::string ANSI_LIGHT_SQUARE_BACKGROUND = "\033[48;5;223m";
-const std::string ANSI_BLACK_PIECE_FOREGROUND = "\033[1;38;5;16m";
-const std::string ANSI_WHITE_PIECE_FOREGROUND = "\033[1;38;5;255m";
-const std::string ANSI_CHECK_SQUARE_BACKGROUND = "\033[48;5;124m";
-const std::string ANSI_LEGAL_MOVE_SQUARE_BACKGROUND = "\033[48;5;34m";
-const std::string ANSI_RESET = "\033[0m";
+
+constexpr const char *ANSI_DARK_SQUARE_BACKGROUND = "\033[48;5;94m";
+constexpr const char *ANSI_LIGHT_SQUARE_BACKGROUND = "\033[48;5;223m";
+
+constexpr const char *ANSI_BLACK_PIECE_FOREGROUND = "\033[1;38;5;16m";
+constexpr const char *ANSI_WHITE_PIECE_FOREGROUND = "\033[1;38;5;255m";
+
+constexpr const char *ANSI_CHECK_SQUARE_BACKGROUND = "\033[48;5;124m";
+constexpr const char *ANSI_LEGAL_MOVE_SQUARE_BACKGROUND = "\033[48;5;34m";
+
+constexpr const char *ANSI_RESET = "\033[0m";
+
 }  // namespace
 
 void BoardRenderer::printBoard(const Board &board,

@@ -330,3 +330,12 @@ void GameView::printStatus(const GameStatus &status, const Player &whitePlayer,
 
   std::cout << RESET;
 }
+
+void GameView::printGameStartMessage() const {
+  std::cout << '\n';
+
+  std::cout << GREEN;
+  std::cout << "  ── LET THE GAME BEGIN ───────────────────\n";
+
+  std::cout << RESET << '\n';
+}

@@ -32,6 +32,7 @@ bool Game::handleMainMenu() {
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
 
     if (input == "start") {
+      view_.printGameStartMessage();
       return true;
     }
 

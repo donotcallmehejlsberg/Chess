@@ -31,6 +31,7 @@ class GameView {
   void printCheckStatus(const Player &player, bool isInCheck) const;
   void printStatus(const GameStatus &status, const Player &whitePlayer,
                    const Player &blackPlayer) const;
+  void printGameStartMessage() const;
 };
 
 #endif
