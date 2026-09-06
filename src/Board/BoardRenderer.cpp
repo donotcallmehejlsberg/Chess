@@ -16,6 +16,9 @@ constexpr const char *ANSI_WHITE_PIECE_FOREGROUND = "\033[1;38;5;255m";
 constexpr const char *ANSI_CHECK_SQUARE_BACKGROUND = "\033[48;5;124m";
 constexpr const char *ANSI_LEGAL_MOVE_SQUARE_BACKGROUND = "\033[48;5;34m";
 
+constexpr const char *ANSI_BOARD_BORDER_FOREGROUND = "\033[1;32m";
+constexpr const char *ANSI_BOARD_LABEL_FOREGROUND = "\033[1;37m";
+
 constexpr const char *ANSI_RESET = "\033[0m";
 
 }  // namespace
@@ -38,58 +41,77 @@ void BoardRenderer::printBoard(
     const std::vector<Coordinate> &legal_move_coordinates) const {
   const Color color = current_player.getPlayerColor();
 
+  std::cout << '\n';
+
+  std::cout << ANSI_BOARD_BORDER_FOREGROUND;
+  std::cout << "    ┌────────────────────────────────┐\n";
+  std::cout << ANSI_RESET;
+
   if (color == Color::White) {
-    for (std::size_t row = Board::SIZE; row > 0; row--) {
-      std::cout << row << " ";
-      for (std::size_t column = 0; column < Board::SIZE; column++) {
+    for (std::size_t row = Board::SIZE; row > 0; --row) {
+      std::cout << ANSI_BOARD_LABEL_FOREGROUND << "  " << row << " "
+                << ANSI_BOARD_BORDER_FOREGROUND << "│" << ANSI_RESET;
+
+      for (std::size_t column = 0; column < Board::SIZE; ++column) {
         Coordinate coordinate(Board::SIZE - row, column);
         const Square &square = board.getSquare(coordinate);
+
         printSquare(square, checked_king_coordinate, legal_move_coordinates);
         printPiece(square);
       }
-      std::cout << std::endl;
+
+      std::cout << ANSI_BOARD_BORDER_FOREGROUND << "│" << ANSI_RESET << '\n';
     }
+  } else {
+    for (std::size_t row = 0; row < Board::SIZE; ++row) {
+      std::cout << ANSI_BOARD_LABEL_FOREGROUND << "  " << row + 1 << " "
+                << ANSI_BOARD_BORDER_FOREGROUND << "│" << ANSI_RESET;
 
-    printColumnLabels(color);
-  }
-
-  if (color == Color::Black) {
-    for (std::size_t row = 0; row < Board::SIZE; row++) {
-      std::cout << row + 1 << " ";
-      for (std::size_t column = 0; column < Board::SIZE; column++) {
+      for (std::size_t column = 0; column < Board::SIZE; ++column) {
         Coordinate coordinate(Board::SIZE - row - 1, Board::SIZE - column - 1);
+
         const Square &square = board.getSquare(coordinate);
+
         printSquare(square, checked_king_coordinate, legal_move_coordinates);
         printPiece(square);
       }
-      std::cout << std::endl;
-    }
 
-    printColumnLabels(color);
+      std::cout << ANSI_BOARD_BORDER_FOREGROUND << "│" << ANSI_RESET << '\n';
+    }
   }
-  std::cout << std::endl;
+
+  std::cout << ANSI_BOARD_BORDER_FOREGROUND;
+  std::cout << "    └────────────────────────────────┘\n";
+  std::cout << ANSI_RESET;
+
+  printColumnLabels(color);
+
+  std::cout << '\n';
 }
 
 void BoardRenderer::printColumnLabels(Color color) const {
-  std::cout << "    ";
+  std::cout << ANSI_BOARD_LABEL_FOREGROUND;
+  std::cout << "      ";
 
   if (color == Color::White) {
-    for (char column = 'A'; column <= 'H'; column++) {
+    for (char column = 'A'; column <= 'H'; ++column) {
       std::cout << column;
+
       if (column != 'H') {
         std::cout << "   ";
       }
     }
   } else {
-    for (char column = 'H'; column >= 'A'; column--) {
+    for (char column = 'H'; column >= 'A'; --column) {
       std::cout << column;
+
       if (column != 'A') {
         std::cout << "   ";
       }
     }
   }
 
-  std::cout << std::endl;
+  std::cout << ANSI_RESET << '\n';
 }
 
 void BoardRenderer::printSquare(
