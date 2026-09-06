@@ -47,11 +47,11 @@ bool Game::handleMainMenu() {
     }
 
     if (input == "quit") {
-      std::cout << "Goodbye." << std::endl;
+      view_.printGoodbye();
       return false;
     }
 
-    std::cout << "Invalid command." << std::endl;
+    view_.printInvalidCommand();
   }
 }
 
@@ -145,16 +145,13 @@ Game::CommandResult Game::handleCommand(const std::string &input) {
 }
 
 Game::CommandResult Game::handleQuit() {
-  std::cout << getCurrentPlayer().getColorName()
-            << ", quitting during a game counts as resignation." << std::endl;
-  std::cout << "Are you sure? (yes/no): ";
+  view_.printQuitConfirmation(getCurrentPlayer());
 
   while (true) {
     std::string answer = input_normalizer_.normalize(input_reader_.readLine());
 
     if (answer == "yes") {
-      std::cout << getCurrentPlayer().getColorName() << " quit the game."
-                << std::endl;
+      view_.printQuitConfirmed(getCurrentPlayer());
       setOpponentAsWinner();
       return CommandResult::GameEnded;
     }

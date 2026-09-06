@@ -32,6 +32,14 @@ class GameView {
   void printStatus(const GameStatus &status, const Player &whitePlayer,
                    const Player &blackPlayer) const;
   void printGameStartMessage() const;
+
+  void printGoodbye() const;
+  void printInvalidCommand() const;
+  void printQuitConfirmation(const Player &player) const;
+  void printQuitConfirmed(const Player &player) const;
+  void printQuitCancelled() const;
+  void printResignation(const Player &player) const;
+  void printYesNoPrompt() const;
 };
 
 #endif

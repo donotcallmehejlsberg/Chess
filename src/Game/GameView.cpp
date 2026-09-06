@@ -339,3 +339,31 @@ void GameView::printGameStartMessage() const {
 
   std::cout << RESET << '\n';
 }
+
+void GameView::printGoodbye() const { std::cout << "Goodbye." << '\n'; }
+
+void GameView::printInvalidCommand() const {
+  std::cout << "Invalid command." << '\n';
+}
+
+void GameView::printQuitConfirmation(const Player &player) const {
+  std::cout << player.getColorName()
+            << ", quitting during a game counts as resignation." << std::endl;
+  std::cout << "Are you sure? (yes/no): ";
+}
+
+void GameView::printQuitConfirmed(const Player &player) const {
+  std::cout << player.getColorName() << " quit the game." << '\n';
+}
+
+void GameView::printQuitCancelled() const {
+  std::cout << "Quit cancelled." << '\n';
+}
+
+void GameView::printResignation(const Player &player) const {
+  std::cout << player.getColorName() << " resigned." << '\n';
+}
+
+void GameView::printYesNoPrompt() const {
+  std::cout << "Please answer yes or no: ";
+}
