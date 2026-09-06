@@ -28,7 +28,6 @@ void Game::run() {
 bool Game::handleMainMenu() {
   while (true) {
     view_.printMainMenu();
-    std::cout << "> ";
 
     std::string input = input_normalizer_.normalize(input_reader_.readLine());
 
